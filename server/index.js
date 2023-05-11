@@ -24,17 +24,26 @@ io.on("connection", (socket) => {
 		socket.user_name = user_name
 	})
 
-	socket.on("create room",function(data){
+	socket.on("create room", function(data) {
 		let room_id = Date.now() + Math.floor(Math.random() * 199988888)
-		socket.emit("create room success",{
-			room_id:room_id
+		socket.emit("create room success", {
+			room_id: room_id
 		})
 		socket.join(room_id)
 	})
-	
+
 	socket.on("join room", function(data) {
 		let room_id = data.room_id
 		let room = io.sockets.adapter.rooms[room_id];
+		socket.join(room_id)
+		socket.to(room_id).emit("hello", {
+			room_id: room_id,
+			timestamp: Date.now(),
+			opponent_name: socket.user_name,
+			opponent_id: socket.user_id,
+		})
+		
+		/*
 		if (room_id) {
 			if (room == undefined) {
 				socket.emit("room invalid", {
@@ -69,7 +78,8 @@ io.on("connection", (socket) => {
 					opponent_id: socket.user_id,
 				})
 			}
-		}
+			*/
+
 	})
 });
 
