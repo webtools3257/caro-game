@@ -2,7 +2,6 @@ const path = require('path')
 const http = require("http")
 const express = require("express")
 const socketio = require("socket.io")
-
 const app = express()
 const httpServer = http.createServer(app);
 
@@ -15,7 +14,21 @@ const io = socketio(httpServer, {
 })
 
 io.on("connection", (socket) => {
-	console.log("connected");
+	socket.on("user init",function(data){
+		let user_name = data.user_name
+		let user_id = Date.now()+Math.floor(Math.random()*9999999)
+		socket.emit("user ready",{
+			id: user_id
+		})
+		socket.user_id = user_id
+		socket.join("a")
+	})
+	
+	
+	socket.on("join room",function(data){
+		let room_id = data.room_id
+		console.log(io.sockets.adapter.rooms.get("a").size);
+	})
 });
 
 
