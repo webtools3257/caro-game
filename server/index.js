@@ -24,39 +24,50 @@ io.on("connection", (socket) => {
 		socket.user_name = user_name
 	})
 
-
+	socket.on("create room",function(data){
+		let room_id = Date.now() + Math.floor(Math.random() * 199988888)
+		socket.emit("create room success",{
+			room_id:room_id
+		})
+		socket.join(room_id)
+	})
+	
 	socket.on("join room", function(data) {
 		let room_id = data.room_id
+		let room = io.sockets.adapter.rooms[room_id];
 		if (room_id) {
-			let amount = io.sockets.adapter.rooms.get(room_id).size
-			if (amount > 2) {
+			if (room == undefined) {
+				socket.emit("room invalid", {
+					room_id: room_id,
+					timestamp: Date.now()
+				})
+				return
+			}
+
+			if (room.length > 2) {
 				socket.emit("room full", {
 					room_id: room_id,
 					timestamp: Date.now()
 				})
+			} else if (room.length == 0) {
+				socket.emit("room empty", {
+					room_id: room_id,
+					timestamp: Date.now()
+				})
 			} else {
-
-				let room = io.sockets.adapter.rooms[room_id];
-				if (room.length == 0) {
-					socket.emit("room empty", {
-						room_id: room_id,
-						timestamp: Date.now()
-					})
-				} else {
-					socket.join(room_id)
-					socket.emit("room joined", {
-						room_id: room_id,
-						timestamp: Date.now(),
-						opponent_name: room[0].user_name,
-						opponent_id: room[0].user_id,
-					})
-					room[0].emit("opponent joined", {
-						room_id: room_id,
-						timestamp: Date.now(),
-						opponent_name: socket.user_name,
-						opponent_id: socket.user_id,
-					})
-				}
+				socket.join(room_id)
+				socket.emit("room joined", {
+					room_id: room_id,
+					timestamp: Date.now(),
+					opponent_name: room[0].user_name,
+					opponent_id: room[0].user_id,
+				})
+				room[0].emit("opponent joined", {
+					room_id: room_id,
+					timestamp: Date.now(),
+					opponent_name: socket.user_name,
+					opponent_id: socket.user_id,
+				})
 			}
 		}
 	})
