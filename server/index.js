@@ -1,6 +1,9 @@
 const http = require("http")
+const express = require("express")
 const socketio = require("socket.io")
-const httpServer = http.createServer();
+
+const app = express()
+const httpServer = http.createServer(app);
 
 
 const io = socketio(httpserver, {
@@ -15,4 +18,6 @@ io.on("connection", (socket) => {
 });
 
 
-httpServer.listen(3000);
+httpServer.listen(3000,function(){
+	console.log("Server is running ....")
+});
