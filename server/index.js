@@ -1,3 +1,4 @@
+const path = require('path')
 const http = require("http")
 const express = require("express")
 const socketio = require("socket.io")
@@ -5,8 +6,8 @@ const socketio = require("socket.io")
 const app = express()
 const httpServer = http.createServer(app);
 
-
-const io = socketio(httpserver, {
+app.use('/client', express.static(path.join(__dirname, '../client')))
+const io = socketio(httpServer, {
 	cors: {
 		origin: "*",
 		methods: ["GET", "POST"]
