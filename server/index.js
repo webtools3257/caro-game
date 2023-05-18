@@ -115,6 +115,13 @@ io.on("connection", (socket) => {
 		console.log(`[User ${socket.user_id}] Joined room : ${room_id} !`)
 	})
 	
+	socket.on("play", function(data) {
+		socket.to(`room_${socket.room_id}`).emit("opponent play",{
+			row:data.row,
+			col:data.col
+		})
+	})
+	
 	socket.on("disconnecting", async function(reason) {
 		io.to(`room_${socket.room_id}`).emit("opponent leave", {
 			room_id: socket.room_id,
