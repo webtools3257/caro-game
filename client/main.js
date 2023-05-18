@@ -61,7 +61,7 @@ function play(e) {
 	}
 	if (state == null) {
 		board[row][col] = player
-		document.querySelector(`[data-pos="${row}:${col}"]`).classList.add(currentPlayer)
+		document.querySelector(`[data-pos="${row}:${col}"]`).classList.add(player)
 		if(player == "O"){
 			currentPlayer = "X"
 		}else{
