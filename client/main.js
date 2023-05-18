@@ -1,7 +1,7 @@
 if (!io) {
 	alert("Unable to start websocket module")
 }
-	let game_board = document.querySelector("#game")
+let game_board = document.querySelector("#game")
 
 const socket = io("https://third-oval-nail.glitch.me")
 socket.emit("user init", {
@@ -14,10 +14,10 @@ socket.on("user ready", function(d) {
 
 })
 
-function resetBoard(){
+function resetBoard() {
 	board = []
 	for (var i = 0; i < 10; i++) {
-		let k =[]
+		let k = []
 		let e = document.createElement("div")
 		for (var j = 0; j < 10; j++) {
 			k.push(null)
@@ -26,18 +26,16 @@ function resetBoard(){
 	}
 }
 
-function drawBoard(){
+function drawBoard() {
+	game_board.innerHTML = ""
 	for (var i = 0; i < 10; i++) {
-		
 		let e = document.createElement("tr")
 		for (var j = 0; j < 10; j++) {
-			e.innerHTML +=`
+			e.innerHTML += `
 				<td data-pos="${i}:${j}"></td>
 			`
-			
 		}
 		game_board.appendChild(e)
-		
 	}
 }
 
@@ -52,40 +50,40 @@ function joinRoom() {
 	})
 }
 
-function startGame(){
+function startGame() {
 	resetBoard()
 	drawBoard()
-	if(player == "O"){
+	if (player == "O") {
 		game_board.classList.add("inactive")
 		currentPlayer = "X"
-	}else{
+	} else {
 		currentPlayer = "X"
 	}
 
-	game_board.addEventListener("click",function(e){
+	game_board.addEventListener("click", function(e) {
 		let col = e.target.cellIndex
 		let row = e.target.parentNode.rowIndex
 		let state = board[row][col]
-		if(currentPlayer != player){
+		if (currentPlayer != player) {
 			alert("Wait your turn!")
 			return
 		}
-		if(state == null){
+		if (state == null) {
 			board[row][col] = player
 			document.querySelector(`[data-pos="${row}:${col}"]`).classList.add(currentPlayer)
 			currentPlayer = currentPlayer == "X" ? "O" : "X"
 			game_board.classList.add("inactive")
-			socket.emit("play",{
-				row:row,
-				col:col
+			socket.emit("play", {
+				row: row,
+				col: col
 			})
-			
-		}else{
+
+		} else {
 			alert("Location has been selected !")
 		}
 	})
 
-	socket.on("opponent play",function(d){
+	socket.on("opponent play", function(d) {
 		let row = d.row
 		let col = d.col
 		board[row][col] = currentPlayer
@@ -93,7 +91,7 @@ function startGame(){
 		game_board.classList.remove("inactive")
 		document.querySelector(`[data-pos="${row}:${col}"]`).classList.add(currentPlayer)
 	})
-	
+
 
 }
 
@@ -148,17 +146,16 @@ socket.on("opponent leave", function(d) {
 	document.querySelector("#opponent-name").textContent = ""
 	clearInterval(counter)
 	document.querySelector("#overlay").classList.add("active")
-setTimeout(()=>{
-	document.querySelector("#lobby").classList.remove("open")
-	document.querySelector("#board").classList.remove("open")
-	alert("The opponent has left the match!")
-	player = ""
-	resetBoard()
-	drawBoard()
-	document.querySelector("#overlay").classList.remove("active")
-},5000)
-	
-	
+	setTimeout(() => {
+		document.querySelector("#lobby").classList.remove("open")
+		document.querySelector("#board").classList.remove("open")
+		alert("The opponent has left the match!")
+		player = ""
+		currentPlayer = ""
+		resetBoard()
+		drawBoard()
+		document.querySelector("#overlay").classList.remove("active")
+	}, 5000)
 })
 
 socket.on("create room failed", function(d) {
