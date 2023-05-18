@@ -35,6 +35,7 @@ io.on("connection", (socket) => {
 					msg:"You are currently in a room and you cannot create a new room unless you leave this room!"
 				}
 			})
+			return 
 		}
 		let room_id = Date.now() + Math.floor(Math.random() * 199988888)
 		socket.emit("create room success", {
@@ -49,7 +50,7 @@ io.on("connection", (socket) => {
 		console.log(`[User ${socket.user_id}] Create room : ${room_id} !`)
 	})
 	
-	socket.on("join room", function(data) {
+	socket.on("join room", async function(data) {
 		let room_id = data.room_id
 		if(socket.room_id != null){
 			socket.emit("join room failed",{
@@ -60,8 +61,18 @@ io.on("connection", (socket) => {
 			})
 		}
 		
-		let total_client = io.sockets.adapter.rooms.get(`room_${room_id}`).size
-		if (total_client != 1){
+		let r = io.sockets.adapter.rooms.get(`room_${room_id}`)
+		if(!r){
+			socket.emit("join room failed",{
+				room_id:socket.room_id,
+				cause:{
+					msg:"This room does not exist !"
+				}
+			})
+			return 
+		}
+		
+		if (r.size != 1){
 			socket.emit("room full",{
 				room_id:room_id
 			})
@@ -77,7 +88,6 @@ io.on("connection", (socket) => {
 			}
 		})
 		socket.room_id = room_id
-		let total_client = io.sockets.adapter.rooms.get(`room_${room_id}`).size
 		const sockets = await io.in(`room_${room_id}`).fetchSockets();
 		for (const soc of sockets) {
 			const clientSocket = soc
@@ -93,7 +103,7 @@ io.on("connection", (socket) => {
 			}
 		}
 
-		io.to(`room_${room_id}`).emit("opponent joined", {
+		socket.to(`room_${room_id}`).emit("opponent joined", {
 			room_id: room_id,
 			timestamp: Date.now(),
 			opponent: {
