@@ -49,10 +49,34 @@ function joinRoom() {
 		room_id: prompt("Input ID")
 	})
 }
+function play(e) {
+	let col = e.target.cellIndex
+	let row = e.target.parentNode.rowIndex
+	let state = board[row][col]
+	if (currentPlayer != player) {
+		console.log(2);
+		console.log(player, currentPlayer);
+		alert("Wait your turn!")
+		return
+	}
+	if (state == null) {
+		board[row][col] = player
+		document.querySelector(`[data-pos="${row}:${col}"]`).classList.add(currentPlayer)
+		currentPlayer = currentPlayer == "X" ? "O" : "X"
+		game_board.classList.add("inactive")
+		socket.emit("play", {
+			row: row,
+			col: col
+		})
 
+	} else {
+		alert("Location has been selected !")
+	}
+}
 function startGame() {
 	resetBoard()
 	drawBoard()
+	console.log(player,currentPlayer);
 	if (player == "O") {
 		game_board.classList.add("inactive")
 		currentPlayer = "X"
@@ -60,28 +84,7 @@ function startGame() {
 		currentPlayer = "X"
 	}
 
-	game_board.addEventListener("click", function(e) {
-		let col = e.target.cellIndex
-		let row = e.target.parentNode.rowIndex
-		let state = board[row][col]
-		if (currentPlayer != player) {
-			alert("Wait your turn!")
-			return
-		}
-		if (state == null) {
-			board[row][col] = player
-			document.querySelector(`[data-pos="${row}:${col}"]`).classList.add(currentPlayer)
-			currentPlayer = currentPlayer == "X" ? "O" : "X"
-			game_board.classList.add("inactive")
-			socket.emit("play", {
-				row: row,
-				col: col
-			})
-
-		} else {
-			alert("Location has been selected !")
-		}
-	})
+	game_board.addEventListener("click",play,true)
 
 	socket.on("opponent play", function(d) {
 		let row = d.row
@@ -101,6 +104,7 @@ var player = ""
 var currentPlayer = ""
 socket.on("create room success", function(d) {
 	alert("ID room is " + d.room_id)
+	player = "X"
 	document.querySelector("#room-id").textContent = d.room_id
 	document.querySelector("#lobby").classList.add("open")
 	document.querySelector("#name").textContent = d.ally.name
@@ -110,7 +114,7 @@ socket.on("create room success", function(d) {
 		cs += 1
 		document.querySelector("#counter").textContent = `${cs}s`
 	}, 1000)
-	player = "X"
+	
 })
 
 
@@ -151,9 +155,11 @@ socket.on("opponent leave", function(d) {
 		document.querySelector("#board").classList.remove("open")
 		alert("The opponent has left the match!")
 		player = ""
-		currentPlayer = ""
+		currentPlayer = "X"
 		resetBoard()
 		drawBoard()
+		game_board.classList.remove("inactive")
+		game_board.removeEventListener("click", play, true);
 		document.querySelector("#overlay").classList.remove("active")
 	}, 5000)
 })
