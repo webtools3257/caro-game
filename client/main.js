@@ -13,31 +13,40 @@ socket.on("user ready", function(d) {
 
 function createRoom() {
 	socket.emit("create room", {})
-	socket.on("create room success", function(d) {
-		alert("ID room is " + d.room_id)
-		document.querySelector("#room-id").textContent = d.room_id
-		document.querySelector("#lobby").classList.add("open")
-		document.querySelector("#name").textContent = d.ally.name
-	})
-
-	socket.on("opponent joined", function(d) {
-		document.querySelector("#opponent-name").textContent = d.opponent.name
-	})
 }
 
 function joinRoom() {
 	socket.emit("join room", {
 		room_id: prompt("Input ID")
 	})
-
-	socket.on("joined room", function(d) {
-		document.querySelector("#room-id").textContent = d.room_id
-		document.querySelector("#lobby").classList.add("open")
-		document.querySelector("#name").textContent = d.ally.name
-	})
-
-	socket.on("opponent joined", function(d) {
-		document.querySelector("#opponent-name").textContent = d.opponent.name
-	})
-
 }
+
+socket.on("create room success", function(d) {
+	alert("ID room is " + d.room_id)
+	document.querySelector("#room-id").textContent = d.room_id
+	document.querySelector("#lobby").classList.add("open")
+	document.querySelector("#name").textContent = d.ally.name
+})
+
+
+socket.on("joined room", function(d) {
+	document.querySelector("#room-id").textContent = d.room_id
+	document.querySelector("#lobby").classList.add("open")
+	document.querySelector("#name").textContent = d.ally.name
+})
+
+socket.on("room full", function(d) {
+	alert("The room is full of players!")
+})
+
+socket.on("opponent joined", function(d) {
+	document.querySelector("#opponent-name").textContent = d.opponent.name
+})
+
+socket.on("create room failed",function(d){
+	alert(d.cause.msg)
+})
+
+socket.on("join room failed",function(d){
+	alert(d.cause.msg)
+})
