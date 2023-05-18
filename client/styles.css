@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+*,html{
+	font-family: 'Quicksand', sans-serif;
+}
+body{
+	background: black;
+	color: white;
+}
+.avatar{
+	display: flex;
+	align-items: center;
+	margin: 16px;
+}
+.avatar > img{
+	border: solid;
+	border-width: 0.5px;
+	border-radius: 50%;
+	width: 50px;
+	height: 50px;
+}
+
+.avatar > span{
+	padding: 16px;
+}
+
+.room-id{
+	display: flex;
+	align-items: center;
+}
+button{
+	margin: 5px;
+	border: solid;
+	padding: 16px;
+	background: none;
+	color: white;
+}
+
+.btn-select{
+	display: flex;
+	justify-content: center;
+}
+
+.lobby{
+	display: none;
+	top: 0;
+	left: 0;
+	background: black;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+}
+
+.lobby.open{
+	display: block;
+}
+
+
+.info-match{
+	margin-top: 150px;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: center;
+}

@@ -6,13 +6,38 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title></title>
 	<script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
-
+	<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-	<button onclick="createRoom()">Create Room</button>
-	<button onclick="joinRoom()">Join Room</button>
 
+	<div class="avatar">
+		<img src="./assets/images/icon/player.png" alt="">
+		<span id="username">User</span>
+	</div>
+
+	<div class="btn-select">
+		<button onclick="createRoom()">Create Room</button>
+		<button onclick="joinRoom()">Join Room</button>
+	</div>
+	<div class="lobby" id="lobby">
+		<div class="room-id">
+			<h5>Room ID: </h5>
+			<span id="room-id">000292928</span>
+		</div>
+		<br>
+		<div class="info-match">
+			<div class="avatar">
+				<img src="./assets/images/icon/player.png" alt="">
+				<span id="name">User</span>
+			</div>
+			<h1>Vs</h1>
+			<div class="avatar">
+				<img src="./assets/images/icon/player.png" alt="">
+				<span id="opponent-name">User</span>
+			</div>
+		</div>
+	</div>
 	<script src="./main.js"></script>
 </body>
 
