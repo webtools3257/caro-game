@@ -37,11 +37,18 @@ io.on("connection", (socket) => {
 		})
 		socket.room_id = room_id
 		socket.join(`room_${room_id}`)
-		console.log(`[User ${user_id}] Create room : ${room_id} !`)
+		console.log(`[User ${socket.user_id}] Create room : ${room_id} !`)
 	})
 	socket.on("join room", function(data) {
 		let room_id = data.room_id
 		socket.join(`room_${room_id}`)
+		socket.emit("joined room",{
+			room_id: room_id,
+			ally: {
+				id: socket.user_id,
+				name: socket.user_name
+			}
+		})
 		socket.room_id = room_id
 		let k = io.sockets.adapter.rooms.get(`room_${room_id}`)
 		for (let sid in k) {
@@ -64,7 +71,7 @@ io.on("connection", (socket) => {
 				id: socket.user_id
 			}
 		})
-		console.log(`[User ${user_id}] Joined room : ${room_id} !`)
+		console.log(`[User ${socket.user_id}] Joined room : ${room_id} !`)
 	})
 });
 
