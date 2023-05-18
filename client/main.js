@@ -62,7 +62,11 @@ function play(e) {
 	if (state == null) {
 		board[row][col] = player
 		document.querySelector(`[data-pos="${row}:${col}"]`).classList.add(currentPlayer)
-		currentPlayer = currentPlayer == "X" ? "O" : "X"
+		if(player == "O"){
+			currentPlayer = "X"
+		}else{
+			currentPlayer = "O"
+		}
 		game_board.classList.add("inactive")
 		socket.emit("play", {
 			row: row,
@@ -79,9 +83,9 @@ function startGame() {
 	console.log(player,currentPlayer);
 	if (player == "O") {
 		game_board.classList.add("inactive")
-		currentPlayer = "X"
+		
 	} else {
-		currentPlayer = "X"
+	
 	}
 
 	game_board.addEventListener("click",play,true)
@@ -90,9 +94,9 @@ function startGame() {
 		let row = d.row
 		let col = d.col
 		board[row][col] = currentPlayer
-		currentPlayer = currentPlayer == "X" ? "O" : "X"
-		game_board.classList.remove("inactive")
 		document.querySelector(`[data-pos="${row}:${col}"]`).classList.add(currentPlayer)
+		currentPlayer = player
+		game_board.classList.remove("inactive")
 	})
 
 
@@ -105,6 +109,7 @@ var currentPlayer = ""
 socket.on("create room success", function(d) {
 	alert("ID room is " + d.room_id)
 	player = "X"
+	currentPlayer = "X"
 	document.querySelector("#room-id").textContent = d.room_id
 	document.querySelector("#lobby").classList.add("open")
 	document.querySelector("#name").textContent = d.ally.name
@@ -123,6 +128,7 @@ socket.on("joined room", function(d) {
 	document.querySelector("#lobby").classList.add("open")
 	document.querySelector("#name").textContent = d.ally.name
 	player = "O"
+	currentPlayer = "X"
 })
 
 socket.on("room full", function(d) {
@@ -155,7 +161,7 @@ socket.on("opponent leave", function(d) {
 		document.querySelector("#board").classList.remove("open")
 		alert("The opponent has left the match!")
 		player = ""
-		currentPlayer = "X"
+		currentPlayer = ""
 		resetBoard()
 		drawBoard()
 		game_board.classList.remove("inactive")
