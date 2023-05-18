@@ -114,19 +114,30 @@ io.on("connection", (socket) => {
 		})
 		console.log(`[User ${socket.user_id}] Joined room : ${room_id} !`)
 	})
+	
+	socket.on("disconnecting", async function(reason) {
+		io.to(`room_${socket.room_id}`).emit("opponent leave", {
+			room_id: socket.room_id,
+			timestamp: Date.now(),
+			opponent: {
+				name: socket.user_name,
+				id: socket.user_id
+			}
+		})
+		
+		const sockets = await io.in(`room_${socket.room_id}`).fetchSockets();
+		for (const soc of sockets) {
+			const clientSocket = soc
+			if (socket !== clientSocket) {
+				clientSocket.leave(`room_${socket.room_id}`)
+				clientSocket.room_id = null
+			}
+		}
+	
+	})
 });
 
-io.on("disconnect", function(socket) {
-	io.to(`room_${socket.room_id}`).emit("opponent leave", {
-		room_id: room_id,
-		timestamp: Date.now(),
-		opponent: {
-			name: socket.user_name,
-			id: socket.user_id
-		}
-	})
 
-})
 
 httpServer.listen(3000, function() {
 	console.log("Server is running ....")

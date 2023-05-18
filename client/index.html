@@ -10,7 +10,11 @@
 </head>
 
 <body>
-
+<div id="overlay" class="active">
+	<span>
+		Loading ....
+	</span>
+</div>
 	<div class="avatar">
 		<img src="./assets/images/icon/player.png" alt="">
 		<span id="username">User</span>
@@ -50,9 +54,12 @@
 			</div>
 		</div>
 		<br>
-		<table id="game">
+		<div style="display: flex; align-items: center ; justify-content: center;">
+					<table id="game">
 			
-		</table>
+					</table>
+		</div>
+
 	</div>
 
 	<script src="./main.js"></script>

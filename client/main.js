@@ -147,12 +147,18 @@ socket.on("opponent joined", function(d) {
 socket.on("opponent leave", function(d) {
 	document.querySelector("#opponent-name").textContent = ""
 	clearInterval(counter)
+	document.querySelector("#overlay").classList.add("active")
+setTimeout(()=>{
 	document.querySelector("#lobby").classList.remove("open")
 	document.querySelector("#board").classList.remove("open")
 	alert("The opponent has left the match!")
 	player = ""
 	resetBoard()
 	drawBoard()
+	document.querySelector("#overlay").classList.remove("active")
+},5000)
+	
+	
 })
 
 socket.on("create room failed", function(d) {
