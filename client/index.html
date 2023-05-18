@@ -21,23 +21,40 @@
 		<button onclick="joinRoom()">Join Room</button>
 	</div>
 	<div class="lobby" id="lobby">
-		<div class="room-id">
-			<h5>Room ID: </h5>
-			<span id="room-id">000292928</span>
-		</div>
-		<br>
+		<div class="time-counter" id="counter">0</div>
 		<div class="info-match">
 			<div class="avatar">
 				<img src="./assets/images/icon/player.png" alt="">
-				<span id="name">User</span>
+				<span id="name">????</span>
 			</div>
 			<h1>Vs</h1>
 			<div class="avatar">
 				<img src="./assets/images/icon/player.png" alt="">
-				<span id="opponent-name">User</span>
+				<span id="opponent-name">????</span>
 			</div>
 		</div>
+		<div class="room-id">
+			<h5>Room ID: </h5>
+			<span id="room-id">loading . . ..</span>
+		</div>
 	</div>
+
+	<div class="board" id="board">
+		<div class="board-info-match">
+			<div class="avatar">
+				<span id="board-username">????</span>
+			</div>
+			<h1>Vs</h1>
+			<div class="avatar">
+				<span id="board-opponent-name">????</span>
+			</div>
+		</div>
+		<br>
+		<table id="game">
+			
+		</table>
+	</div>
+
 	<script src="./main.js"></script>
 </body>
 

@@ -28,14 +28,14 @@ io.on("connection", (socket) => {
 	})
 
 	socket.on("create room", function(data) {
-		if(socket.room_id != null){
-			socket.emit("create room failed",{
-				room_id:socket.room_id,
-				cause:{
-					msg:"You are currently in a room and you cannot create a new room unless you leave this room!"
+		if (socket.room_id != null) {
+			socket.emit("create room failed", {
+				room_id: socket.room_id,
+				cause: {
+					msg: "You are currently in a room and you cannot create a new room unless you leave this room!"
 				}
 			})
-			return 
+			return
 		}
 		let room_id = Date.now() + Math.floor(Math.random() * 199988888)
 		socket.emit("create room success", {
@@ -49,36 +49,36 @@ io.on("connection", (socket) => {
 		socket.join(`room_${room_id}`)
 		console.log(`[User ${socket.user_id}] Create room : ${room_id} !`)
 	})
-	
+
 	socket.on("join room", async function(data) {
 		let room_id = data.room_id
-		if(socket.room_id != null){
-			socket.emit("join room failed",{
-				room_id:socket.room_id,
-				cause:{
-					msg:"You are currently in a room and you cannot join a new room unless you leave this room!"
+		if (socket.room_id != null) {
+			socket.emit("join room failed", {
+				room_id: socket.room_id,
+				cause: {
+					msg: "You are currently in a room and you cannot join a new room unless you leave this room!"
 				}
 			})
 		}
-		
+
 		let r = io.sockets.adapter.rooms.get(`room_${room_id}`)
-		if(!r){
-			socket.emit("join room failed",{
-				room_id:socket.room_id,
-				cause:{
-					msg:"This room does not exist !"
+		if (!r) {
+			socket.emit("join room failed", {
+				room_id: socket.room_id,
+				cause: {
+					msg: "This room does not exist !"
 				}
 			})
-			return 
+			return
 		}
-		
-		if (r.size != 1){
-			socket.emit("room full",{
-				room_id:room_id
+
+		if (r.size != 1) {
+			socket.emit("room full", {
+				room_id: room_id
 			})
-			return 
+			return
 		}
-		
+
 		socket.join(`room_${room_id}`)
 		socket.emit("joined room", {
 			room_id: room_id,
@@ -87,6 +87,7 @@ io.on("connection", (socket) => {
 				name: socket.user_name
 			}
 		})
+
 		socket.room_id = room_id
 		const sockets = await io.in(`room_${room_id}`).fetchSockets();
 		for (const soc of sockets) {
@@ -115,6 +116,17 @@ io.on("connection", (socket) => {
 	})
 });
 
+io.on("disconnect", function(socket) {
+	io.to(`room_${socket.room_id}`).emit("opponent leave", {
+		room_id: room_id,
+		timestamp: Date.now(),
+		opponent: {
+			name: socket.user_name,
+			id: socket.user_id
+		}
+	})
+
+})
 
 httpServer.listen(3000, function() {
 	console.log("Server is running ....")
