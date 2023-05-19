@@ -9,9 +9,9 @@ socket.emit("user init", {
 })
 
 socket.on("user ready", function(d) {
+document.querySelector("#overlay").classList.remove("active")
 	document.querySelector("#username").textContent = d.name
 	document.querySelector("#board-username").textContent = d.name
-
 })
 
 function resetBoard() {
@@ -41,10 +41,14 @@ function drawBoard() {
 
 
 function createRoom() {
+	document.querySelector("#overlay").classList.add("active")
+
 	socket.emit("create room", {})
 }
 
 function joinRoom() {
+	document.querySelector("#overlay").classList.add("active")
+
 	socket.emit("join room", {
 		room_id: prompt("Input ID")
 	})
@@ -110,6 +114,8 @@ socket.on("create room success", function(d) {
 	alert("ID room is " + d.room_id)
 	player = "X"
 	currentPlayer = "X"
+		document.querySelector("#overlay").classList.remove("active")
+
 	document.querySelector("#room-id").textContent = d.room_id
 	document.querySelector("#lobby").classList.add("open")
 	document.querySelector("#name").textContent = d.ally.name
@@ -124,6 +130,7 @@ socket.on("create room success", function(d) {
 
 
 socket.on("joined room", function(d) {
+	document.querySelector("#overlay").classList.remove("active")
 	document.querySelector("#room-id").textContent = d.room_id
 	document.querySelector("#lobby").classList.add("open")
 	document.querySelector("#name").textContent = d.ally.name

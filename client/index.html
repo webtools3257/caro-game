@@ -6,15 +6,18 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title></title>
 	<script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js" integrity="sha512-6+YN/9o9BWrk6wSfGxQGpt3EUK6XeHi6yeHV+TYD2GR0Sj/cggRpXr1BrAQf0as6XslxomMUxXp2vIl+fv0QRA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-<div id="overlay" class="">
-	<span>
-		Loading ....
-	</span>
-</div>
+	<div id="overlay" class="active">
+		<div class="loader" style="margin-top:350px;">
+		</div>
+		<br><br>
+		<p>Loading ...</p>
+
+	</div>
 	<div class="avatar">
 		<img src="./assets/images/icon/player.png" alt="">
 		<span id="username">User</span>
@@ -24,6 +27,13 @@
 		<button onclick="createRoom()">Create Room</button>
 		<button onclick="joinRoom()">Join Room</button>
 	</div>
+	<br><br>
+	<h3 style="text-align: center;">List room</h3>
+	<div id="list-room">
+		<br><br>
+		<div class="loader"></div>
+	</div>
+
 	<div class="lobby" id="lobby">
 		<div class="time-counter" id="counter">0</div>
 		<div class="info-match">
@@ -55,9 +65,9 @@
 		</div>
 		<br>
 		<div style="display: flex; align-items: center ; justify-content: center;">
-					<table id="game">
-			
-					</table>
+			<table id="game">
+
+			</table>
 		</div>
 
 	</div>
