@@ -18,8 +18,7 @@ async function loadLanguage() {
 		localStorage.setItem("lang", "en")
 		langName = "en"
 	}
-	
-	let res = await fetch(`${window.location.origin}/client/languages/${langName}.json`)
+	let res = await fetch(`https://webtools3257.github.io/caro-game/client/languages/${langName}.json`)
 	try {
 		language = JSON.parse(await res.text())
 		languageSelect.value = langName
