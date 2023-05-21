@@ -25,6 +25,7 @@ async function loadLanguage() {
 		languageSelect.value = langName
 	} catch (e) {
 		console.log(e)
+		alert(e)
 		alert("Unable to load language resource.Unable to load language resource. The game will use the default language.")
 		localStorage.setItem("lang", "en")
 		await loadLanguage()
