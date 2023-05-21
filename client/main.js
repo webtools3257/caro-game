@@ -122,6 +122,9 @@ socket.on("opponent leave", function(d) {
 })
 
 function startGame() {
+	if(playerTurn){
+		alert("You start !")
+	}
 	drawBoard()
 	started = true
 }
@@ -162,7 +165,8 @@ board.addEventListener("click", function(e) {
 	}
 	socket.emit("play", {
 		row: row,
-		col: col
+		col: col,
+		player:playerCreateRoom ? "X" : "O"
 	})
 })
 

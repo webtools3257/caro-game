@@ -127,7 +127,7 @@ io.on("connection", (socket) => {
 				row: data.row,
 				col: data.col
 			})
-			board[row][col] = data.player
+			board[data.row][data.col] = data.player
 			socket.emit("play success", {
 				row: data.row,
 				col: data.col
