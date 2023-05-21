@@ -2,6 +2,8 @@ const path = require('path')
 const http = require("http")
 const express = require("express")
 const socketio = require("socket.io")
+const Storage = require('node-storage');
+
 const app = express()
 const httpServer = http.createServer(app);
 
@@ -13,7 +15,22 @@ const io = socketio(httpServer, {
 	}
 })
 
+const boardEmpty = []
+for (let i = 0; i < 10; i++) {
+	boardEmpty.push([])
+	for (let j = 0; j < 10; j++) {
+		boardEmpty[i].push("null")
+	}
+}
+
+var roomData = new Storage(path.join(__dirname, "./Data/roomData.json"));
+
+function isEmptyCell(board, row, col) {
+	return board[row][col] == "null"
+}
+
 io.on("connection", (socket) => {
+
 	socket.on("user init", function(data) {
 		let user_name = data.user_name
 		let user_id = Date.now() + Math.floor(Math.random() * 9999999)
@@ -47,6 +64,7 @@ io.on("connection", (socket) => {
 		})
 		socket.room_id = room_id
 		socket.join(`room_${room_id}`)
+		roomData.put(`room_${room_id}`, boardEmpty)
 		console.log(`[User ${socket.user_id}] Create room : ${room_id} !`)
 	})
 
@@ -114,14 +132,28 @@ io.on("connection", (socket) => {
 		})
 		console.log(`[User ${socket.user_id}] Joined room : ${room_id} !`)
 	})
-	
+
 	socket.on("play", function(data) {
-		socket.to(`room_${socket.room_id}`).emit("opponent play",{
-			row:data.row,
-			col:data.col
-		})
+		let board = roomData.get(`room_${socket.room_id}`)
+		if (isEmptyCell(board, data.row, data.col)) {
+			socket.to(`room_${socket.room_id}`).emit("opponent play", {
+				row: data.row,
+				col: data.col
+			})
+			
+			socket.emit("play success", {
+				row: data.row,
+				col: data.col
+			})
+
+		} else {
+			socket.emit("play failed", {
+				row: data.row,
+				col: data.col
+			})
+		}
 	})
-	
+
 	socket.on("disconnecting", async function(reason) {
 		io.to(`room_${socket.room_id}`).emit("opponent leave", {
 			room_id: socket.room_id,
@@ -131,7 +163,7 @@ io.on("connection", (socket) => {
 				id: socket.user_id
 			}
 		})
-		
+
 		const sockets = await io.in(`room_${socket.room_id}`).fetchSockets();
 		for (const soc of sockets) {
 			const clientSocket = soc
@@ -140,7 +172,7 @@ io.on("connection", (socket) => {
 				clientSocket.room_id = null
 			}
 		}
-	
+
 	})
 });
 
