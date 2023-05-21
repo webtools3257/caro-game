@@ -128,6 +128,7 @@ function startGame() {
 
 socket.on("room full", function(d) {
 	alert(language.message["room full"])
+	overlay.classList.remove("active")
 	playerCreateRoom = false
 	started = false
 })
@@ -167,10 +168,12 @@ board.addEventListener("click", function(e) {
 
 socket.on("room not exist", function(d) {
 	alert(language.message["room not exist"])
+	overlay.classList.remove("active")
 })
 
 socket.on("joined the room warning", function(d) {
 	alert(language.message["joined the room warning"])
+	
 })
 
 function leaveRoom(){
