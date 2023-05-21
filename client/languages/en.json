@@ -1,0 +1,23 @@
+{
+	"message": {
+		"opponent leave": "The opponent has left the match ! ",
+		"room full":"Room did not have enough players !",
+		"play failed":"Invalid cell !",
+		"wait your turn":"Please wait your turn!",
+		"room not exist":"Room does not exist ! ",
+		"joined the room warning":"You are in the room.You are in the room. You cannot perform this action unless you cancel the room !",
+		"input name":"Please enter name: ",
+		"change lang":"The language will be changed when you restart the game!"
+	},
+	"ui":{
+		"loading":"Loading",
+		"room id":"Room ID :",
+		"create room":"Create Room",
+		"join room":"Join Room",
+		"list room":"List Room",
+		"estimate":"Estimate",
+		"start in":"Start in",
+		"waiting opponent":"Waiting for the opponent to play",
+		"leave room":"Leave Room"	
+	}
+}

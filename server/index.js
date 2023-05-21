@@ -46,12 +46,7 @@ io.on("connection", (socket) => {
 
 	socket.on("create room", function(data) {
 		if (socket.room_id != null) {
-			socket.emit("create room failed", {
-				room_id: socket.room_id,
-				cause: {
-					msg: "You are currently in a room and you cannot create a new room unless you leave this room!"
-				}
-			})
+			socket.emit("joined the room warning",{})
 			return
 		}
 		let room_id = Date.now() + Math.floor(Math.random() * 199988888)
@@ -71,21 +66,13 @@ io.on("connection", (socket) => {
 	socket.on("join room", async function(data) {
 		let room_id = data.room_id
 		if (socket.room_id != null) {
-			socket.emit("join room failed", {
-				room_id: socket.room_id,
-				cause: {
-					msg: "You are currently in a room and you cannot join a new room unless you leave this room!"
-				}
-			})
+			socket.emit("joined the room warning",{})
 		}
 
 		let r = io.sockets.adapter.rooms.get(`room_${room_id}`)
 		if (!r) {
-			socket.emit("join room failed", {
-				room_id: socket.room_id,
-				cause: {
-					msg: "This room does not exist !"
-				}
+			socket.emit("room not exist",{
+				room_id:room_id
 			})
 			return
 		}
@@ -140,18 +127,40 @@ io.on("connection", (socket) => {
 				row: data.row,
 				col: data.col
 			})
-			
+			board[row][col] = data.player
 			socket.emit("play success", {
 				row: data.row,
 				col: data.col
 			})
-
+			roomData.put(`room_${socket.room_id}`)
 		} else {
 			socket.emit("play failed", {
 				row: data.row,
 				col: data.col
 			})
 		}
+	})
+	socket.on("leave room",function(data){
+		socket.room_id = null
+		socket.leave(`room_${socket.room_id}`)
+		io.to(`room_${socket.room_id}`).emit("opponent leave", {
+			room_id: socket.room_id,
+			timestamp: Date.now(),
+			opponent: {
+				name: socket.user_name,
+				id: socket.user_id
+			}
+		})
+		roomData.remove(`room_${room_id}`)
+		const sockets = await io.in(`room_${socket.room_id}`).fetchSockets();
+		for (const soc of sockets) {
+			const clientSocket = soc
+			if (socket !== clientSocket) {
+				clientSocket.leave(`room_${socket.room_id}`)
+				clientSocket.room_id = null
+			}
+		}
+		socket.on("leave room success",{})
 	})
 
 	socket.on("disconnecting", async function(reason) {
@@ -163,7 +172,7 @@ io.on("connection", (socket) => {
 				id: socket.user_id
 			}
 		})
-
+		roomData.remove(`room_${room_id}`)
 		const sockets = await io.in(`room_${socket.room_id}`).fetchSockets();
 		for (const soc of sockets) {
 			const clientSocket = soc
