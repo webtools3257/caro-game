@@ -24,6 +24,7 @@ async function loadLanguage() {
 		language = JSON.parse(await res.text())
 		languageSelect.value = langName
 	} catch (e) {
+		alert(e)
 		alert("Unable to load language resource.Unable to load language resource. The game will use the default language.")
 		localStorage.setItem("lang", "en")
 		await loadLanguage()
