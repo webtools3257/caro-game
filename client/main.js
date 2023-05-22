@@ -202,6 +202,7 @@ socket.on("win", function(data) {
 	resultMatchDisplay.textContent = "Victory"
 
 	if (playerCreateRoom) {
+		startTimer()
 		board.classList.remove("open")
 		lobbyUserNameDisplay.textContent = "????"
 		lobby.classList.add("open")
@@ -213,6 +214,7 @@ socket.on("opponent won", function(data) {
 	result.classList.add("active")
 	resultMatchDisplay.textContent = "Lose"
 	if (playerCreateRoom) {
+		startTimer()
 		board.classList.remove("open")
 		lobbyUserNameDisplay.textContent = "????"
 		lobby.classList.add("open")

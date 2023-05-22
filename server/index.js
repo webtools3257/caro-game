@@ -195,12 +195,14 @@ io.on("connection", (socket) => {
 				socket.emit("win",{
 					player:data.player
 				})
+				
 				socket.to(`room_${socket.room_id}`).emit("opponent won",{
 					opponent:{
 						name:socket.name,
 						id:socket.id
 					}
 				})
+				
 				const sockets = await io.in(`room_${socket.room_id}`).fetchSockets();
 				for (const soc of sockets) {
 					const clientSocket = soc
