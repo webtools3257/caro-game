@@ -7,6 +7,7 @@ const Storage = require('node-storage');
 const app = express()
 const httpServer = http.createServer(app);
 
+
 app.use('/client', express.static(path.join(__dirname, '../client')))
 const io = socketio(httpServer, {
 	cors: {
@@ -21,6 +22,61 @@ for (let i = 0; i < 10; i++) {
 	for (let j = 0; j < 10; j++) {
 		boardEmpty[i].push("null")
 	}
+}
+
+async function checkWin(a, n, m, ch) {
+
+	for (let i = 0; i < n; i++) {
+		let count = 0;
+		for (let j = 0; j < m; j++) {
+			if (a[i][j] == ch) {
+				count++;
+				if (count == 5) return true;
+			} else {
+				count = 0;
+			}
+		}
+	}
+
+	for (let j = 0; j < m; j++) {
+		let count = 0;
+		for (let i = 0; i < n; i++) {
+			if (a[i][j] == ch) {
+				count++;
+				if (count == 5) return true;
+			} else {
+				count = 0;
+			}
+		}
+	}
+
+	for (let k = 0; k < 2 * n - 1; k++) {
+		let count = 0;
+		for (let i = 0; i < n; i++) {
+			let j = i - k;
+			if (j >= 0 && j < m && a[i][j] == ch) {
+				count++;
+				if (count == 5) return true;
+			} else {
+				count = 0;
+			}
+		}
+	}
+
+	for (let k = 0; k < 2 * n - 1; k++) {
+		let count = 0;
+		for (let i = 0; i < n; i++) {
+			let j = k - i;
+			if (j >= 0 && j < m && a[i][j] == ch) {
+				count++;
+				if (count == 5) return true;
+			} else {
+				count = 0;
+			}
+		}
+	}
+
+	return false;
 }
 
 var roomData = new Storage(path.join(__dirname, "./Data/roomData.json"));
@@ -46,7 +102,7 @@ io.on("connection", (socket) => {
 
 	socket.on("create room", function(data) {
 		if (socket.room_id != null) {
-			socket.emit("joined the room warning",{})
+			socket.emit("joined the room warning", {})
 			return
 		}
 		let room_id = Date.now() + Math.floor(Math.random() * 199988888)
@@ -66,13 +122,13 @@ io.on("connection", (socket) => {
 	socket.on("join room", async function(data) {
 		let room_id = data.room_id
 		if (socket.room_id != null) {
-			socket.emit("joined the room warning",{})
+			socket.emit("joined the room warning", {})
 		}
 
 		let r = io.sockets.adapter.rooms.get(`room_${room_id}`)
 		if (!r) {
-			socket.emit("room not exist",{
-				room_id:room_id
+			socket.emit("room not exist", {
+				room_id: room_id
 			})
 			return
 		}
@@ -120,7 +176,7 @@ io.on("connection", (socket) => {
 		console.log(`[User ${socket.user_id}] Joined room : ${room_id} !`)
 	})
 
-	socket.on("play", function(data) {
+	socket.on("play",async function(data) {
 		let board = roomData.get(`room_${socket.room_id}`)
 		if (isEmptyCell(board, data.row, data.col)) {
 			socket.to(`room_${socket.room_id}`).emit("opponent play", {
@@ -133,6 +189,18 @@ io.on("connection", (socket) => {
 				col: data.col
 			})
 			roomData.put(`room_${socket.room_id}`)
+			let isWin = checkWin(board,10,10,data.player)
+			if(isWin){
+				socket.emit("win",{
+					player:data.player
+				})
+				socket.to(`room_${socket.room_id}`).emit("opponent won",{
+					opponent:{
+						name:socket.name,
+						id:socket.id
+					}
+				})
+			}
 		} else {
 			socket.emit("play failed", {
 				row: data.row,
@@ -140,7 +208,8 @@ io.on("connection", (socket) => {
 			})
 		}
 	})
-	socket.on("leave room",function(data){
+	
+	socket.on("leave room", async function(data) {
 		socket.room_id = null
 		socket.leave(`room_${socket.room_id}`)
 		io.to(`room_${socket.room_id}`).emit("opponent leave", {
@@ -160,7 +229,7 @@ io.on("connection", (socket) => {
 				clientSocket.room_id = null
 			}
 		}
-		socket.on("leave room success",{})
+		socket.on("leave room success", {})
 	})
 
 	socket.on("disconnecting", async function(reason) {
@@ -172,6 +241,7 @@ io.on("connection", (socket) => {
 				id: socket.user_id
 			}
 		})
+		
 		roomData.remove(`room_${room_id}`)
 		const sockets = await io.in(`room_${socket.room_id}`).fetchSockets();
 		for (const soc of sockets) {

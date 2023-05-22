@@ -8,6 +8,10 @@ const lobbyTimeDisplay = document.querySelector("#counter")
 const board = document.querySelector("#board")
 const boardUserNameDisplay = document.querySelector("#board-username")
 const boardOpponentNameDisplay = document.querySelector("#board-opponent-name")
+const result = document.querySelector("#result")
+const resultBoardUserNameDisplay = document.querySelector("#result-username")
+const resultBoardOpponentNameDisplay = document.querySelector("#result-opponent-name")
+const resultMatchDisplay = document.querySelector("#result-match")
 let game_board = document.querySelector("#game")
 
 var language = {}
@@ -29,7 +33,7 @@ async function loadLanguage() {
 		localStorage.setItem("lang", "en")
 		await loadLanguage()
 	}
-	
+
 }
 
 var timer = null
@@ -46,9 +50,15 @@ function createRoom() {
 }
 
 function joinRoom() {
+	let room_id = null
+	room_id = prompt("Input ID")
+	if (!room_id) {
+		
+		return
+	}
 	overlay.classList.add("active")
 	socket.emit("join room", {
-		room_id: prompt("Input ID")
+		room_id: room_id
 	})
 }
 
@@ -56,9 +66,9 @@ socket.on("joined room", function(d) {
 	playerTurn = false
 	playerCreateRoom = false
 	overlay.classList.remove("active")
-	lobbyUserNameDisplay.textContent = d.room_id
 	lobby.classList.add("open")
 	lobbyUserNameDisplay.textContent = d.ally.name
+	resultBoardUserNameDisplay.textContent = d.ally.name
 })
 
 socket.on("create room success", function(data) {
@@ -67,6 +77,7 @@ socket.on("create room success", function(data) {
 	overlay.classList.remove("active")
 	lobby.classList.add("open")
 	lobbyUserNameDisplay.textContent = data.ally.name
+	resultBoardUserNameDisplay.textContent = data.ally.name
 	lobbyRoomIDDisplay.textContent = data.room_id
 	timeCounter = 0
 	timer = setInterval(() => {
@@ -77,6 +88,7 @@ socket.on("create room success", function(data) {
 
 socket.on("opponent joined", function(data) {
 	lobbyOpponentNameDisplay.textContent = data.opponent.name
+	resultBoardOpponentNameDisplay.textContent = data.opponent.name
 	lobbyRoomIDDisplay.textContent = data.room_id
 	clearInterval(timer)
 	let cs = 10
@@ -108,6 +120,7 @@ function drawBoard() {
 
 socket.on("opponent leave", function(d) {
 	lobbyOpponentNameDisplay.textContent = ""
+	resultBoardOpponentNameDisplay.textContent = ""
 	clearInterval(timer)
 	playerTurn = false
 	playerCreateRoom = false
@@ -122,7 +135,7 @@ socket.on("opponent leave", function(d) {
 })
 
 function startGame() {
-	if(playerTurn){
+	if (playerTurn) {
 		alert("You start !")
 	}
 	drawBoard()
@@ -166,7 +179,7 @@ board.addEventListener("click", function(e) {
 	socket.emit("play", {
 		row: row,
 		col: col,
-		player:playerCreateRoom ? "X" : "O"
+		player: playerCreateRoom ? "X" : "O"
 	})
 })
 
@@ -177,45 +190,72 @@ socket.on("room not exist", function(d) {
 
 socket.on("joined the room warning", function(d) {
 	alert(language.message["joined the room warning"])
-	
+
 })
 
-function leaveRoom(){
-	socket.emit("leave room",{})
+socket.on("win", function(data) {
+	result.classList.add("active")
+	resultMatchDisplay.textContent = "Victory"
+})
+
+socket.on("opponent won", function(data) {
+	result.classList.add("active")
+	resultMatchDisplay.textContent = "Lose"
+})
+
+
+function leaveRoom() {
+	socket.emit("leave room", {})
 	playerTurn = false
 	playerCreateRoom = false
 	lobby.classList.remove("open")
 	board.classList.remove("open")
 	overlay.classList.add("active")
-	setTimeout(()=>{
+	setTimeout(() => {
 		overlay.classList.remove("active")
-	},3000)
+	}, 3000)
 }
 
-class LangDisplayComponent extends HTMLElement{
-	constructor(){
+class LangDisplayComponent extends HTMLElement {
+	constructor() {
 		super()
 	}
-	
-	connectedCallback(){
+
+	connectedCallback() {
 		this.textContent = language.ui[this.getAttribute("title")]
 	}
 }
 
 loadLanguage()
 	.then(() => {
-		window.customElements.define("s-lang",LangDisplayComponent)
+		let name = null
+		while (true) {
+			name = prompt(language.message["input name"])
+			if (!name) {
+				name = "Anonymous Player"
+				break
+			} else {
+				if (name.length > 12) {
+					alert("Name is too long ")
+				} else {
+					break
+				}
+			}
+		}
+		window.customElements.define("s-lang", LangDisplayComponent)
 		socket.emit("user init", {
-			user_name: prompt(language.message["input name"])
+			user_name: name
 		})
 
 		socket.on("user ready", function(data) {
 			overlay.classList.remove("active")
+			document.querySelector("#username").textContent = data.name
 			boardUserNameDisplay.textContent = data.name
 		})
 	})
 
-languageSelect.addEventListener("change",function(e){
+
+languageSelect.addEventListener("change", function(e) {
 	alert(language.message["change lang"])
-	localStorage.setItem("lang",languageSelect.value)
+	localStorage.setItem("lang", languageSelect.value)
 })

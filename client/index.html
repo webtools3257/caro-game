@@ -16,8 +16,8 @@
 		</div>
 		<br><br>
 		<p><s-lang title="loading">Loading</s-lang> ...</p>
-
 	</div>
+
 	<div class="header">
 		<div class="avatar">
 			<img src="./assets/images/icon/player.jpg" alt="">
@@ -31,10 +31,11 @@
 			</select>
 		</div>
 	</div>
+
 	<br><br><br><br><br><br>
 	<div class="btn-select">
-		<button onclick="createRoom()"><s-lang title="create room">Create Room</s-lang></button>
-		<button onclick="joinRoom()"><s-lang title="join room">Join Room</s-lang></button>
+		<button class="btn" onclick="createRoom()"><s-lang title="create room">Create Room</s-lang></button>
+		<button class="btn" onclick="joinRoom()"><s-lang title="join room">Join Room</s-lang></button>
 	</div>
 	<br><br>
 	<h3 style="text-align: center;"><s-lang title="list room">List Room</s-lang></h3>
@@ -46,7 +47,7 @@
 	<div class="lobby" id="lobby">
 		<div class="time-counter" id="counter">0</div>
 		<div class="info-match">
-			<h2> <s-lang title="waiting opponent">Waiting for the opponent to play</s-lang> </h2>
+			<h2 style="text-align:center;"> <s-lang title="waiting opponent">Waiting for the opponent to play</s-lang> </h2>
 
 			<div class="avatar">
 				<img src="./assets/images/icon/player.jpg" alt="">
@@ -82,9 +83,21 @@
 
 			</table>
 		</div>
+	</div>
+	<div id="result">
+		<div class="result-info">
+			<div class="avatar">
+				<span id="result-username">????</span>
+			</div>
+			<h1 id="result-match" style="font-size: 45px;">???</h1>
+			<div class="avatar">
+				<span id="result-opponent-name">????</span>
+			</div>
+
+		</div>
+		<button style=" background:transparent; color: white; border: none; font-size: 25px; font-weight: bold;   justify-content: center;" onclick="result.classList.remove(`active`)">X</button>
 
 	</div>
-
 	<script src="./main.js"></script>
 </body>
 

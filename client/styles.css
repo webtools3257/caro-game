@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+
 *,
 html {
 	font-family: 'Quicksand', sans-serif;
@@ -10,7 +11,7 @@ body {
 	color: white;
 }
 
-.header{
+.header {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -19,6 +20,7 @@ body {
 	flex-flow: row;
 	align-items: center;
 }
+
 .avatar {
 	display: flex;
 	align-items: center;
@@ -48,7 +50,7 @@ body {
 	font-size: 18px;
 }
 
-button {
+button.btn {
 	margin: 5px;
 	border: solid;
 	padding: 16px;
@@ -57,7 +59,7 @@ button {
 	transition: 0.5s;
 }
 
-button:hover{
+button:hover {
 	background: white;
 	color: black;
 }
@@ -83,7 +85,7 @@ button:hover{
 
 
 .info-match {
-	margin-top: 150px;
+	margin-top: 70px;
 	display: flex;
 	flex-flow: column;
 	align-items: center;
@@ -137,7 +139,9 @@ button:hover{
 }
 
 #overlay.active {
-	display: flex;align-items: center;flex-flow:column;
+	display: flex;
+	align-items: center;
+	flex-flow: column;
 }
 
 
@@ -216,29 +220,77 @@ button:hover{
 	}
 }
 
-#list-room{
+#list-room {
 	display: flex;
-	flex-flow: column ;
+	flex-flow: column;
 	align-items: center;
 	justify-content: center;
 }
 
-.room-info{
+.room-info {
 	width: 250px;
 	padding: 16px;
 	margin: 5px;
 	border: solid;
 }
 
-#lang-select{
+#lang-select {
 	color: white;
 	padding: 5px;
 	background: transparent;
-	border-radius:20px;
+	border-radius: 20px;
 }
 
-select:focus,input:focus{
+select:focus,
+input:focus {
 	outline: none;
 	border-color: white;
 }
 
+#result {
+	position: fixed;
+	display: none;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: black;
+	z-index: 1002;
+	cursor: none;
+	transition: 0.4s;
+	backdrop-filter: blur(8px);
+}
+
+#result.active {
+	display: block;
+	-webkit-animation-name: displayanimation;
+	-moz-animation-name: displayanimation;
+	-o-animation-name: displayanimation;
+	animation-name: displayanimation;
+	-webkit-animation-duration: 0.4s;
+	-moz-animation-duration: 0.4s;
+	-o-animation-duration: 0.4s;
+	animation-duration: 0.4s;
+}
+
+.result-info {
+	display: flex;
+	justify-content: center;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	padding: 10px;
+
+}
+
+@keyframes displayanimation{
+	0%{
+		opacity: 0;
+	}
+	100%{
+		opacity: 0.9;
+	}
+}
