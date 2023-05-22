@@ -134,6 +134,12 @@ socket.on("opponent leave", function(d) {
 		board.classList.remove("open")
 		game_board.classList.remove("inactive")
 		lobby.classList.remove("open")
+		if(playerCreateRoom){
+			socket.emit("reset room")
+			lobby.classList.add("open")
+			lobbyOpponentNameDisplay.textContent = "???"
+		}
+
 		alert(language.message["opponent leave"])
 	}, 5000)
 })
@@ -200,24 +206,29 @@ socket.on("joined the room warning", function(d) {
 socket.on("win", function(data) {
 	result.classList.add("active")
 	resultMatchDisplay.textContent = "Victory"
-
+	board.classList.remove("open")
 	if (playerCreateRoom) {
 		startTimer()
-		board.classList.remove("open")
-		lobbyUserNameDisplay.textContent = "????"
+		lobbyOpponentNameDisplay.textContent = "????"
 		lobby.classList.add("open")
+		socket.emit("reset room")
+	}else{
+		leaveRoom()
 	}
-
+	
 })
 
 socket.on("opponent won", function(data) {
 	result.classList.add("active")
 	resultMatchDisplay.textContent = "Lose"
+	board.classList.remove("open")
 	if (playerCreateRoom) {
 		startTimer()
-		board.classList.remove("open")
-		lobbyUserNameDisplay.textContent = "????"
+		lobbyOpponentNameDisplay.textContent = "????"
 		lobby.classList.add("open")
+		socket.emit("reset room")
+	}else{
+		leaveRoom()
 	}
 })
 

@@ -174,7 +174,13 @@ io.on("connection", (socket) => {
 		})
 		console.log(`[User ${socket.user_id}] Joined room : ${room_id} !`)
 	})
-
+	
+	socket.on("reset room",function(){
+		try{
+		roomData[socket.room_id] = boardEmpty
+		}catch(e){}
+	})
+	
 	socket.on("play",async function(data) {
 		let board = roomData.get(`room_${socket.room_id}`)
 		if (isEmptyCell(board, data.row, data.col)) {
@@ -197,15 +203,7 @@ io.on("connection", (socket) => {
 					}
 				})
 				
-				const sockets = await io.in(`room_${socket.room_id}`).fetchSockets();
-				for (const soc of sockets) {
-					const clientSocket = soc
-					if (socket !== clientSocket) {
-						clientSocket.leave(`room_${socket.room_id}`)
-						clientSocket.room_id = null
-					}
-				}
-			
+				
 				roomData[`room_${socket.room_id}`]=boardEmpty
 			}
 			socket.to(`room_${socket.room_id}`).emit("opponent play", {
@@ -232,15 +230,13 @@ io.on("connection", (socket) => {
 				id: socket.user_id
 			}
 		})
-		delete roomData[`room_${room_id}`]
 		const sockets = await io.in(`room_${socket.room_id}`).fetchSockets();
-		for (const soc of sockets) {
-			const clientSocket = soc
-			if (socket !== clientSocket) {
-				clientSocket.leave(`room_${socket.room_id}`)
-				clientSocket.room_id = null
-			}
+		if(socket.length == 0){
+			delete roomData[`room_${socket.room_id}`]
+		}else{
+			roomData[`room_${socket.room_id}`]=boardEmpty
 		}
+		
 		socket.on("leave room success", {})
 	})
 
@@ -253,17 +249,12 @@ io.on("connection", (socket) => {
 				id: socket.user_id
 			}
 		})
-		
-		delete roomData[`room_${room_id}`]
 		const sockets = await io.in(`room_${socket.room_id}`).fetchSockets();
-		for (const soc of sockets) {
-			const clientSocket = soc
-			if (socket !== clientSocket) {
-				clientSocket.leave(`room_${socket.room_id}`)
-				clientSocket.room_id = null
-			}
+		if (socket.length == 0) {
+			delete roomData[`room_${socket.room_id}`]
+		} else {
+			roomData[`room_${socket.room_id}`] = boardEmpty
 		}
-
 	})
 });
 
