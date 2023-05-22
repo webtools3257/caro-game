@@ -179,16 +179,11 @@ io.on("connection", (socket) => {
 	socket.on("play",async function(data) {
 		let board = roomData.get(`room_${socket.room_id}`)
 		if (isEmptyCell(board, data.row, data.col)) {
-			socket.to(`room_${socket.room_id}`).emit("opponent play", {
-				row: data.row,
-				col: data.col
-			})
 			board[data.row][data.col] = data.player
 			socket.emit("play success", {
 				row: data.row,
 				col: data.col
 			})
-
 			roomData.put(`room_${socket.room_id}`,board)
 			let isWin = await checkWin(board,10,10,data.player)
 			if(isWin){
@@ -212,6 +207,11 @@ io.on("connection", (socket) => {
 					}
 				}
 			}
+			socket.to(`room_${socket.room_id}`).emit("opponent play", {
+				row: data.row,
+				col: data.col
+			})
+			
 		} else {
 			socket.emit("play failed", {
 				row: data.row,
