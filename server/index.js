@@ -165,7 +165,7 @@ io.on("connection", (socket) => {
 			}
 		}
 
-		socket.to(`room_${room_id}`).emit("opponent joined", {
+		socket.to(`room_${socket.room_id}`).emit("opponent joined", {
 			room_id: room_id,
 			timestamp: Date.now(),
 			opponent: {
@@ -188,8 +188,9 @@ io.on("connection", (socket) => {
 				row: data.row,
 				col: data.col
 			})
-			roomData.put(`room_${socket.room_id}`)
-			let isWin = checkWin(board,10,10,data.player)
+
+			roomData.put(`room_${socket.room_id}`,board)
+			let isWin = await checkWin(board,10,10,data.player)
 			if(isWin){
 				socket.emit("win",{
 					player:data.player
@@ -200,6 +201,14 @@ io.on("connection", (socket) => {
 						id:socket.id
 					}
 				})
+				const sockets = await io.in(`room_${socket.room_id}`).fetchSockets();
+				for (const soc of sockets) {
+					const clientSocket = soc
+					if (socket !== clientSocket) {
+						clientSocket.leave(`room_${socket.room_id}`)
+						clientSocket.room_id = null
+					}
+				}
 			}
 		} else {
 			socket.emit("play failed", {

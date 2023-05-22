@@ -53,7 +53,7 @@ function joinRoom() {
 	let room_id = null
 	room_id = prompt("Input ID")
 	if (!room_id) {
-		
+
 		return
 	}
 	overlay.classList.add("active")
@@ -62,6 +62,14 @@ function joinRoom() {
 	})
 }
 
+function startTimer() {
+	timeCounter = 0
+	timer = setInterval(() => {
+		timeCounter += 1
+		lobbyTimeDisplay.innerHTML = `<s-lang title="estimate">Estimate</s-lang> : ${timeCounter}s`
+	}, 1000)
+
+}
 socket.on("joined room", function(d) {
 	playerTurn = false
 	playerCreateRoom = false
@@ -79,11 +87,7 @@ socket.on("create room success", function(data) {
 	lobbyUserNameDisplay.textContent = data.ally.name
 	resultBoardUserNameDisplay.textContent = data.ally.name
 	lobbyRoomIDDisplay.textContent = data.room_id
-	timeCounter = 0
-	timer = setInterval(() => {
-		timeCounter += 1
-		lobbyTimeDisplay.innerHTML = `<s-lang title="estimate">Estimate</s-lang> : ${timeCounter}s`
-	}, 1000)
+	startTimer()
 })
 
 socket.on("opponent joined", function(data) {
@@ -196,11 +200,23 @@ socket.on("joined the room warning", function(d) {
 socket.on("win", function(data) {
 	result.classList.add("active")
 	resultMatchDisplay.textContent = "Victory"
+
+	if (playerCreateRoom) {
+		board.classList.remove("open")
+		lobbyUserNameDisplay.textContent = "????"
+		lobby.classList.add("open")
+	}
+
 })
 
 socket.on("opponent won", function(data) {
 	result.classList.add("active")
 	resultMatchDisplay.textContent = "Lose"
+	if (playerCreateRoom) {
+		board.classList.remove("open")
+		lobbyUserNameDisplay.textContent = "????"
+		lobby.classList.add("open")
+	}
 })
 
 
