@@ -25,7 +25,6 @@ for (let i = 0; i < 10; i++) {
 }
 
 async function checkWin(a, n, m, ch) {
-
 	for (let i = 0; i < n; i++) {
 		let count = 0;
 		for (let j = 0; j < m; j++) {
@@ -79,7 +78,7 @@ async function checkWin(a, n, m, ch) {
 	return false;
 }
 
-var roomData = new Storage(path.join(__dirname, "./Data/roomData.json"));
+var roomData = {}
 
 function isEmptyCell(board, row, col) {
 	return board[row][col] == "null"
@@ -115,7 +114,7 @@ io.on("connection", (socket) => {
 		})
 		socket.room_id = room_id
 		socket.join(`room_${room_id}`)
-		roomData.put(`room_${room_id}`, boardEmpty)
+		roomData[`room_${room_id}`] = boardEmpty
 		console.log(`[User ${socket.user_id}] Create room : ${room_id} !`)
 	})
 
@@ -184,7 +183,7 @@ io.on("connection", (socket) => {
 				row: data.row,
 				col: data.col
 			})
-			roomData.put(`room_${socket.room_id}`,board)
+			roomData[`room_${socket.room_id}`]=board
 			let isWin = await checkWin(board,10,10,data.player)
 			if(isWin){
 				socket.emit("win",{
@@ -206,6 +205,8 @@ io.on("connection", (socket) => {
 						clientSocket.room_id = null
 					}
 				}
+			
+				roomData[`room_${socket.room_id}`]=boardEmpty
 			}
 			socket.to(`room_${socket.room_id}`).emit("opponent play", {
 				row: data.row,
@@ -231,7 +232,7 @@ io.on("connection", (socket) => {
 				id: socket.user_id
 			}
 		})
-		roomData.remove(`room_${room_id}`)
+		delete roomData[`room_${room_id}`]
 		const sockets = await io.in(`room_${socket.room_id}`).fetchSockets();
 		for (const soc of sockets) {
 			const clientSocket = soc
@@ -253,7 +254,7 @@ io.on("connection", (socket) => {
 			}
 		})
 		
-		roomData.remove(`room_${room_id}`)
+		delete roomData[`room_${room_id}`]
 		const sockets = await io.in(`room_${socket.room_id}`).fetchSockets();
 		for (const soc of sockets) {
 			const clientSocket = soc
