@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Caro game</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+	<div id="overlay">
+		<div class="loader" style="margin-top:350px;">
+		</div>
+		<br><br>
+		<p>Loading ...</p>
+	</div>
+	<div class="header">
+		<div class="avatar">
+			<img src="./assets/player_icon.jpg" alt="">
+			<span id="username">Hello</span>
+		</div>
+		<select class="lang-select">
+			<option value="shhshhsbs">shhshhsbs</option>
+		</select>
+	</div>
+
+	<br><br><br><br><br>
+	<div class="container">
+		<div class="tab" id="tab1">
+			<div class="tab-header">
+				<div class="tab-item active" data-action="toggle-tab" data-tab="#tab1" data-index="0">Home</div>
+				<div class="tab-item" data-action="toggle-tab" data-tab="#tab1" data-index="1">List room</div>
+				<div class="tab-item" data-action="toggle-tab" data-tab="#tab1" data-index="2">Chat</div>
+
+			</div>
+			<div class="tab-content">
+				<div class="active">
+					<button class="btn" id="btn1">Create Room</button>
+					<button class="btn" id="btn3">Join Room</button>
+					<br><br><br>
+				</div>
+				<div>
+					<br>
+					<div style="display: flex; flex-flow: column; align-items: center;">
+						<table>
+							<tr>
+								<th style="width: 90%;">RoomID</th>
+								<th style="width: 10%;">Actions</th>
+							</tr>
+							<tr>
+								<td>Hdhdhdhdh</td>
+								<td><button class="btn">dhdhdhhd</button></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="create-room" id="window1">
+		<div class="window-header" style="background:none;">
+			<button class="close-btn" id="btn-close-create-room-window"> X </button>
+			<span  style="padding-left: 30px;">Room ID : <span id="room-id"></span></span>
+		</div>
+		<div class="container">
+			<span  style="display:flex; justify-content:center; text-align:center; "><span id="timer-type">Emirates : </span> <span id="timer">0</span>s</span>
+			<br><br><br><br><br>
+			<div class="match-info">
+				<div class="avatar">
+					<img src="./assets/player_icon.jpg" alt="">
+					<span id="name-player">Hello</span>
+				</div>
+				<h2>Vs</h2>
+				<div class="avatar">
+					<img src="./assets/player_icon.jpg" alt="">
+					<span id="name-opponent">Hello</span>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	<div class="board" id="board">
+			<div class="board-info-match">
+				<div class="avatar">
+					<span id="board-username">????</span>
+				</div>
+				<h1>Vs</h1>
+				<div class="avatar">
+					<span id="board-opponent-name">????</span>
+				</div>
+			</div>
+			<br>
+			<div style="display: flex; align-items: center ; justify-content: center;">
+				<table id="game">
+	
+				</table>
+			</div>
+	
+		</div>
+	<script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+	<script type="module" src="./main.js"></script>
+</body>
+
+</html>
