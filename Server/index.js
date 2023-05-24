@@ -15,8 +15,6 @@ const io = socketio(httpServer, {
 	}
 })
 
-
-
 io.on("connection", (socket) => {
 
 	socket.on("user init", function(data) {
@@ -126,6 +124,13 @@ io.on("connection", (socket) => {
 		})
 		socket.room_id = null
 		socket.emit("leave room success",{})
+	})
+	
+	socket.on("surrender",function(data){
+		socket.to(`room_${socket.room_id}`).emit("opponent surrender",{
+			room_id:socket.room_id
+		})
+		socket.emit("surrender success",{})
 	})
 	
 	socket.on("disconnecting", async function(reason) {

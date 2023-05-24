@@ -1,0 +1,30 @@
+{
+	"messages":{
+		"leave room success":"You have left the room!",
+		"create room success":"Room creation success!",
+		"opponent joined":"The opponent has entered the room.",
+		"opponent leave":"The opponent has leaved !",
+		"joined room":"You have entered the room !",
+		"in the room":"You are in the waiting room !",
+		"room full":"The room is full of players!",
+		"room not exist":"Room does not exist !",
+		"opponent surrender":"The opponent has surrendered !"
+	},
+	"ui":{
+		"create room":"Create Room",
+		"join room":"Join Room",
+		"room id":"Room ID",
+		"action":"Action",
+		"list room":"List room",
+		"estimate":"Emirates ",
+		"start in":"Start in ",
+		"surrender":"Surrender"
+	},
+	"alerts":{
+		"change lang":"See changes will be applied when you restart the application !",
+		"name too long":"Name is too long! Names can only be up to 12 characters !"
+	},
+	"prompts":{
+		"input name":"Please enter name:"
+	}
+}

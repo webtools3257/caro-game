@@ -1,0 +1,30 @@
+{
+	"messages": {
+		"leave room success": "Bạn đã rời khỏi phòng !",
+		"create room success": "Tạo phòng thành công !",
+		"opponent joined": "Đối thủ đã vào phòng ",
+		"opponent leave": "Đối thủ đã rời đi !",
+		"joined room": "Bạn đã vào phòng !",
+		"in the room":"Bạn đang ở trong phòng chờ  !",
+		"room full":"Phòng này đã đủ người chơi  !",
+		"room not exist":"Phòng không tồn tại !",
+		"opponent surrender":"Đối thủ đã đầu hàng !"
+	},
+	"ui": {
+		"create room": "Tạo phòng",
+		"join room": "Tham gia phòng",
+		"room id": "ID phòng",
+		"action": " ",
+		"list room": "Danh sách phòng",
+		"estimate": "Ước tính ",
+		"start in": "Bắt đầu sau ",
+		"surrender":"Đầu hàng"
+	},
+	"alerts": {
+		"change lang": "Thay đổi sẽ được áp dụng khi bạn khởi động lại trò chơi !",
+		"name too long": "Tên quá dài ! Tên chỉ được tối đa 12 kí tự !"
+	},
+	"prompts": {
+		"input name": "Vui lòng nhập tên :"
+	}
+}
