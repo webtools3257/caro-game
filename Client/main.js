@@ -105,7 +105,7 @@ class CaroTable {
 let Caro = null
 let timer = null
 let timeCounter = 0
-
+let playerCreateRoom = false
 function startTimer() {
 	timeCounter = 0
 	timer = setInterval(() => {
@@ -121,6 +121,7 @@ function clearTimer() {
 
 function createRoom() {
 	overlay.classList.add("active")
+	playerCreateRoom = true
 	createRoomWindow.classList.add("active")
 	socket.emit("create room", {})
 	Caro = new CaroTable()
@@ -149,6 +150,7 @@ function joinRoom() {
 function leaveRoom() {
 	overlay.classList.add("active")
 	socket.emit("leave room")
+	playerCreateRoom = false
 }
 
 socket.emit("user init", {
@@ -161,10 +163,10 @@ socket.on("opponent joined", function(data) {
 	Caro.opponent.name = data.name
 	document.querySelector("#timer-type").innerHTML = "Start in  : "
 	clearTimer()
-
 	let c = 10
 	let t = setInterval(() => {
 		c -= 1
+		document.querySelector("#timer-type").innerHTML = "Start in  : "
 		document.querySelector("#timer").innerHTML = c
 		if (c <= 0) {
 			clearInterval(t)
@@ -189,6 +191,9 @@ socket.on("create room success", function(data) {
 socket.on("leave room success", function(data) {
 	Caro = null
 	clearTimer()
+	playerCreateRoom = false
+	document.querySelector("#name-opponent").innerHTML = "???"
+	document.querySelector("#board-opponent-name").innerHTML = "???"
 	document.querySelector("#board").classList.remove("active")
 	overlay.classList.remove("active")
 	createRoomWindow.classList.remove("active")
@@ -198,8 +203,17 @@ socket.on("opponent leave", function(data) {
 	Caro = null
 	clearTimer()
 	document.querySelector("#board").classList.remove("active")
+	document.querySelector("#name-opponent").innerHTML = "???"
+	document.querySelector("#board-opponent-name").innerHTML = "???"
+	document.querySelector("#board").classList.remove("active")
 	overlay.classList.remove("active")
-	createRoomWindow.classList.remove("active")
+	if(!playerCreateRoom){
+		createRoomWindow.classList.remove("active")
+		socket.emit("leave room",{})
+	}else{
+		createRoomWindow.classList.add("active")
+	}
+
 })
 
 

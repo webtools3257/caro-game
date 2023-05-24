@@ -113,7 +113,21 @@ io.on("connection", (socket) => {
 			row:data.row
 		})
 	})
-
+	
+	socket.on("leave room", async function(data){
+		socket.leave(`room_${socket.room_id}`)
+		socket.to(`room_${socket.room_id}`).emit("opponent leave", {
+			room_id: socket.room_id,
+			timestamp: Date.now(),
+			opponent: {
+				name: socket.user_name,
+				id: socket.user_id
+			}
+		})
+		socket.room_id = null
+		socket.emit("leave room success",{})
+	})
+	
 	socket.on("disconnecting", async function(reason) {
 		io.to(`room_${socket.room_id}`).emit("opponent leave", {
 			room_id: socket.room_id,
@@ -123,15 +137,6 @@ io.on("connection", (socket) => {
 				id: socket.user_id
 			}
 		})
-
-		const sockets = await io.in(`room_${socket.room_id}`).fetchSockets();
-		for (const soc of sockets) {
-			const clientSocket = soc
-			if (socket !== clientSocket) {
-				clientSocket.leave(`room_${socket.room_id}`)
-				clientSocket.room_id = null
-			}
-		}
 
 	})
 });
