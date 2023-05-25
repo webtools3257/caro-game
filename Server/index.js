@@ -133,6 +133,28 @@ io.on("connection", (socket) => {
 		socket.emit("surrender success",{})
 	})
 	
+	socket.on("request play again",function(){
+		socket.to(`room_${socket.room_id}`).emit("opponent request play again",{
+			room_id:socket.room_id
+		})
+		
+		
+	})
+	
+	socket.on("accept play again",function(){
+		socket.to(`room_${socket.room_id}`).emit("opponent accept play again",{
+			room_id:socket.room_id
+		})
+		
+	})
+
+socket.on("not accept play again",function(){
+		socket.to(`room_${socket.room_id}`).emit("opponent not accept play again",{
+			room_id:socket.room_id
+		})
+		
+	})
+
 	socket.on("disconnecting", async function(reason) {
 		io.to(`room_${socket.room_id}`).emit("opponent leave", {
 			room_id: socket.room_id,

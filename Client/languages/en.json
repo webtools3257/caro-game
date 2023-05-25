@@ -8,7 +8,9 @@
 		"in the room":"You are in the waiting room !",
 		"room full":"The room is full of players!",
 		"room not exist":"Room does not exist !",
-		"opponent surrender":"The opponent has surrendered !"
+		"opponent surrender":"The opponent has surrendered !",
+		"opponent not accept play again":""
+		
 	},
 	"ui":{
 		"create room":"Create Room",

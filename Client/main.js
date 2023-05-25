@@ -21,6 +21,7 @@ window.addEventListener("click", function(e) {
 			window_.classList.remove("active")
 	}
 })
+
 window.onerror = function() {
 	addMessage("Oops ! Error when start app !")
 }
@@ -44,6 +45,10 @@ document.querySelector("#btn3").addEventListener("click", function(e) {
 	joinRoom()
 })
 
+document.querySelector("#surrender").addEventListener("click", function(e) {
+	surrender()
+})
+
 document.querySelector("#btn-close-create-room-window").addEventListener("click", function(e) {
 	leaveRoom()
 	createRoomWindow.classList.remove("active")
@@ -54,18 +59,29 @@ document.querySelector("#lang").addEventListener("change", function(e) {
 	alert(language.alerts["change lang"])
 })
 
-document.querySelector("#close-result-display").addEventListener("change", function(e) {
+document.querySelector("#play-again").addEventListener("click", function(e) {
 	document.querySelector("#result").classList.remove("active")
+	socket.emit("request play again", {})
+	overlay.classList.add("active")
+})
+
+document.querySelector("#close-result-display").addEventListener("click", function(e) {
+	document.querySelector("#result").classList.remove("active")
+	lastRoomID = roomID
 	if (!playerCreateRoom) {
+		document.querySelector("#name-opponent").innerHTML = "???"
+		document.querySelector("#board-opponent-name").innerHTML = "???"
+		document.querySelector("#info-name-opponent").innerHTML = "???"
 		createRoomWindow.classList.remove("active")
 		socket.emit("leave room", {})
 	} else {
+		document.querySelector("#name-opponent").innerHTML = "???"
+		document.querySelector("#board-opponent-name").innerHTML = "???"
+		document.querySelector("#info-name-opponent").innerHTML = "???"
 		createRoomWindow.classList.add("active")
 		createRoom()
-		startEstimateTimer()
 	}
 })
-
 
 function drawBoard(game_board) {
 	game_board.innerHTML = ""
@@ -141,7 +157,6 @@ class CaroTable {
 			this.boardElement.classList.add("disable")
 		}
 		drawBoard(this.boardElement)
-
 	}
 }
 
@@ -152,6 +167,12 @@ let countdownTimer = null
 let countdown = 10
 let playerCreateRoom = false
 let language = []
+let roomID = null
+let lastRoomID = null
+
+function requestPlayAgain() {
+	socket.emit("request play again", {})
+}
 
 function startEstimateTimer() {
 	estimateTimeCounter = 0
@@ -189,7 +210,6 @@ function clearCountdown() {
 function createRoom() {
 	playerCreateRoom = true
 	createRoomWindow.classList.add("active")
-
 	Caro = new CaroTable()
 	Caro.player.name = socket.name
 	Caro.player.played = false
@@ -203,7 +223,6 @@ function joinRoom() {
 		room_id: room_id
 	})
 	overlay.classList.add("active")
-
 	Caro = new CaroTable()
 	Caro.player.name = socket.name
 	Caro.player.isCreatedRoom = false
@@ -223,6 +242,15 @@ function surrender() {
 	socket.emit("surrender", {})
 }
 
+function rejoinRoom() {
+	Caro = new CaroTable()
+	Caro.player.name = socket.name
+	Caro.player.isCreatedRoom = false
+	Caro.player.played = true
+	Caro.opponent.played = false
+	Caro.start = "opponent"
+	Caro.boardElement = document.querySelector("#game")
+}
 
 socket.on("opponent joined", function(data) {
 	document.querySelector("#name-opponent").innerHTML = data.opponent.name
@@ -248,6 +276,7 @@ socket.on("create room success", function(data) {
 	startEstimateTimer()
 	addMessage(language.messages["create room success"])
 	document.querySelector("#timer-type").innerHTML = `<s-lang title="estimate"></s-lang> : `
+	roomID = data.room_id
 })
 
 socket.on("leave room success", function(data) {
@@ -255,6 +284,7 @@ socket.on("leave room success", function(data) {
 	clearEstimateTimer()
 	clearCountdown()
 	playerCreateRoom = false
+	roomID = null
 	addMessage(language.messages["leave room success"])
 	document.querySelector("#name-opponent").innerHTML = "???"
 	document.querySelector("#board-opponent-name").innerHTML = "???"
@@ -280,9 +310,7 @@ socket.on("opponent leave", function(data) {
 	} else {
 		createRoomWindow.classList.add("active")
 		createRoom()
-		startEstimateTimer()
 	}
-
 })
 
 socket.on("joined room", function(data) {
@@ -290,6 +318,36 @@ socket.on("joined room", function(data) {
 	overlay.classList.remove("active")
 	document.querySelector("#room-id").innerHTML = data.room_id
 	addMessage(language.messages["joined room"])
+	roomID = data.room_id
+})
+
+socket.on("opponent request play again", function(data) {
+	overlay.classList.remove("active")
+	let status = confirm("The opponent asked to play again. Do you agree?")
+	if (status) {
+		socket.emit("accept play again", {
+			room_id: roomID
+		})
+		document.querySelector("#result").classList.remove("active")
+		createRoomWindow.classList.add("active")
+		createRoom()
+		startCountdown()
+	} else {
+		socket.emit("not accept play again", {})
+	}
+})
+
+socket.on("opponent accept play again", function(data) {
+	overlay.classList.remove("active")
+	document.querySelector("#result").classList.remove("active")
+	createRoomWindow.classList.add("active")
+	rejoinRoom()
+	startCountdown()
+})
+
+socket.on("opponent not accept play again", function() {
+	overlay.classList.remove("active")
+	addMessage(language.messages["opponent not accept play again"])
 })
 
 function addMessage(text) {
@@ -359,7 +417,6 @@ socket.on("surrender success", function() {
 	document.querySelector("#result-state").innerHTML = "Lose"
 	document.querySelector("#result").classList.add("active")
 	Caro = null
-	addMessage(language.messages["opponent surrender"])
 	clearEstimateTimer()
 	document.querySelector("#name-opponent").innerHTML = "???"
 	document.querySelector("#board-opponent-name").innerHTML = "???"
