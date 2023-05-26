@@ -27,328 +27,18 @@ window.onerror = function() {
 }
 
 window.onoffline = function() {
-	addMessage("You are offline ")
+	addMessage("No internet connection  ")
 }
 
-
+window.ononline = function() {
+	addMessage("Internet connection is back !")
+}
 const socket = window.io("https://third-oval-nail.glitch.me")
+const chatSocket= window.io("https://third-oval-nail.glitch.me/chat")
 
 let createRoomWindow = document.querySelector("#window1")
 let overlay = document.querySelector("#overlay")
-document.querySelector("#btn1").addEventListener("click", function(e) {
-	overlay.classList.add("active")
-	socket.emit("create room", {})
-	createRoom()
-})
-
-document.querySelector("#btn3").addEventListener("click", function(e) {
-	joinRoom()
-})
-
-document.querySelector("#surrender").addEventListener("click", function(e) {
-	surrender()
-})
-
-document.querySelector("#btn-close-create-room-window").addEventListener("click", function(e) {
-	leaveRoom()
-	createRoomWindow.classList.remove("active")
-})
-
-document.querySelector("#lang").addEventListener("change", function(e) {
-	localStorage.setItem("lang", document.querySelector("#lang").value)
-	alert(language.alerts["change lang"])
-})
-
-document.querySelector("#play-again").addEventListener("click", function(e) {
-	document.querySelector("#result").classList.remove("active")
-	socket.emit("request play again", {})
-	overlay.classList.add("active")
-})
-
-document.querySelector("#close-result-display").addEventListener("click", function(e) {
-	document.querySelector("#result").classList.remove("active")
-	lastRoomID = roomID
-	if (!playerCreateRoom) {
-		document.querySelector("#name-opponent").innerHTML = "???"
-		document.querySelector("#board-opponent-name").innerHTML = "???"
-		document.querySelector("#info-name-opponent").innerHTML = "???"
-		createRoomWindow.classList.remove("active")
-		socket.emit("leave room", {})
-	} else {
-		document.querySelector("#name-opponent").innerHTML = "???"
-		document.querySelector("#board-opponent-name").innerHTML = "???"
-		document.querySelector("#info-name-opponent").innerHTML = "???"
-		createRoomWindow.classList.add("active")
-		createRoom()
-	}
-})
-
-function drawBoard(game_board) {
-	game_board.innerHTML = ""
-	for (var i = 0; i < 10; i++) {
-		let e = document.createElement("tr")
-		for (var j = 0; j < 10; j++) {
-			e.innerHTML += `
-				<td data-pos="${i}:${j}"></td>
-			`
-		}
-		game_board.appendChild(e)
-	}
-}
-
-
-function generateEmptyBoard(w, h) {
-	let board = []
-	for (var i = 0; i < w; i++) {
-		board.push([])
-		for (var j = 0; j < h.length; j++) {
-			board[i].push(null)
-		}
-	}
-	return board
-}
-
-class CaroTable {
-	constructor() {
-		this.board = generateEmptyBoard()
-		this.player = {
-			played: false,
-			name: "A"
-		}
-		this.opponent = {
-			played: false,
-			name: "B"
-		}
-
-		this.start = null
-		this.boardElement = document.createElement("table")
-	}
-
-	reset() {
-		this.board = generateEmptyBoard()
-		this.playerX = "unknown"
-		this.playerY = "unknown"
-		this.currentPlayer = this.playerX
-	}
-
-	isEmptyCell(row, col) {
-		return this.board[rơ]
-	}
-
-	playerPlay(row, col) {
-		if (this.opponent.played == true && this.isEmptyCell(row, col)) {
-			this.board[row][col] = this.start == this.player ? "X" : "O"
-			this.opponent.played = false
-			this.player.played = true
-		}
-	}
-
-	opponentPlay(row, col) {
-		if (this.player.played == true && this.isEmptyCell(row, col)) {
-			this.board[row][col] = this.start == this.player ? "O" : "X"
-			this.opponent.played = true
-			this.player.played = false
-		}
-	}
-
-	startGame() {
-		document.querySelector("#board").classList.add("active")
-		if (this.start != "player") {
-			this.boardElement.classList.add("disable")
-		}
-		drawBoard(this.boardElement)
-	}
-}
-
-let Caro = null
-let estimateTimer = null
-let estimateTimeCounter = 0
-let countdownTimer = null
-let countdown = 10
-let playerCreateRoom = false
-let language = []
-let roomID = null
-let lastRoomID = null
-
-function requestPlayAgain() {
-	socket.emit("request play again", {})
-}
-
-function startEstimateTimer() {
-	estimateTimeCounter = 0
-	estimateTimer = setInterval(() => {
-		estimateTimeCounter++
-		document.querySelector("#timer").innerHTML = estimateTimeCounter
-	}, 1000)
-}
-
-function clearEstimateTimer() {
-	clearInterval(estimateTimer)
-	document.querySelector("#timer-type").innerHTML = `<s-lang title="estimate"></s-lang> : `
-}
-
-function startCountdown() {
-	countdown = 10
-	countdownTimer = setInterval(() => {
-		countdown -= 1
-		document.querySelector("#timer-type").innerHTML = `<s-lang title="start in"></s-lang> : `
-		document.querySelector("#timer").innerHTML = countdown
-		if (countdown <= 0) {
-			clearInterval(countdownTimer)
-			Caro.startGame()
-		}
-	}, 1000)
-}
-
-function clearCountdown() {
-	document.querySelector("#timer-type").innerHTML = `<s-lang title="estimate"></s-lang> : `
-	document.querySelector("#timer").innerHTML = 0
-	clearInterval(countdownTimer)
-	countdown = 10
-}
-
-function createRoom() {
-	playerCreateRoom = true
-	createRoomWindow.classList.add("active")
-	Caro = new CaroTable()
-	Caro.player.name = socket.name
-	Caro.player.played = false
-	Caro.player.isCreatedRoom = true
-	Caro.boardElement = document.querySelector("#game")
-}
-
-function joinRoom() {
-	let room_id = prompt("Input ID :")
-	socket.emit("join room", {
-		room_id: room_id
-	})
-	overlay.classList.add("active")
-	Caro = new CaroTable()
-	Caro.player.name = socket.name
-	Caro.player.isCreatedRoom = false
-	Caro.player.played = true
-	Caro.opponent.played = false
-	Caro.start = "opponent"
-	Caro.boardElement = document.querySelector("#game")
-}
-
-function leaveRoom() {
-	overlay.classList.add("active")
-	socket.emit("leave room", {})
-	playerCreateRoom = false
-}
-
-function surrender() {
-	socket.emit("surrender", {})
-}
-
-function rejoinRoom() {
-	Caro = new CaroTable()
-	Caro.player.name = socket.name
-	Caro.player.isCreatedRoom = false
-	Caro.player.played = true
-	Caro.opponent.played = false
-	Caro.start = "opponent"
-	Caro.boardElement = document.querySelector("#game")
-}
-
-socket.on("opponent joined", function(data) {
-	document.querySelector("#name-opponent").innerHTML = data.opponent.name
-	document.querySelector("#board-opponent-name").innerHTML = data.opponent.name
-	Caro.opponent.name = data.name
-	document.querySelector("#timer-type").innerHTML = `<s-lang title="start in"></s-lang> : `
-	clearEstimateTimer()
-	startCountdown()
-	addMessage(language.messages["opponent joined"])
-})
-
-socket.on("user ready", function(data) {
-	overlay.classList.remove("active")
-	document.querySelector("#username").innerHTML = data.name
-	document.querySelector("#name-player").innerHTML = data.name
-	document.querySelector("#board-username").innerHTML = data.name
-	document.querySelector("#info-name-player").innerHTML = data.name
-})
-
-socket.on("create room success", function(data) {
-	overlay.classList.remove("active")
-	document.querySelector("#room-id").innerHTML = data.room_id
-	startEstimateTimer()
-	addMessage(language.messages["create room success"])
-	document.querySelector("#timer-type").innerHTML = `<s-lang title="estimate"></s-lang> : `
-	roomID = data.room_id
-})
-
-socket.on("leave room success", function(data) {
-	Caro = null
-	clearEstimateTimer()
-	clearCountdown()
-	playerCreateRoom = false
-	roomID = null
-	addMessage(language.messages["leave room success"])
-	document.querySelector("#name-opponent").innerHTML = "???"
-	document.querySelector("#board-opponent-name").innerHTML = "???"
-	document.querySelector("#info-name-opponent").innerHTML = "???"
-	document.querySelector("#board").classList.remove("active")
-	overlay.classList.remove("active")
-	createRoomWindow.classList.remove("active")
-})
-
-socket.on("opponent leave", function(data) {
-	Caro = null
-	addMessage(language.messages["opponent leave"])
-	clearEstimateTimer()
-	document.querySelector("#name-opponent").innerHTML = "???"
-	document.querySelector("#board-opponent-name").innerHTML = "???"
-	document.querySelector("#info-name-opponent").innerHTML = "???"
-	document.querySelector("#board").classList.remove("active")
-	overlay.classList.remove("active")
-	clearCountdown()
-	if (!playerCreateRoom) {
-		createRoomWindow.classList.remove("active")
-		socket.emit("leave room", {})
-	} else {
-		createRoomWindow.classList.add("active")
-		createRoom()
-	}
-})
-
-socket.on("joined room", function(data) {
-	createRoomWindow.classList.add("active")
-	overlay.classList.remove("active")
-	document.querySelector("#room-id").innerHTML = data.room_id
-	addMessage(language.messages["joined room"])
-	roomID = data.room_id
-})
-
-socket.on("opponent request play again", function(data) {
-	overlay.classList.remove("active")
-	let status = confirm("The opponent asked to play again. Do you agree?")
-	if (status) {
-		socket.emit("accept play again", {
-			room_id: roomID
-		})
-		document.querySelector("#result").classList.remove("active")
-		createRoomWindow.classList.add("active")
-		createRoom()
-		startCountdown()
-	} else {
-		socket.emit("not accept play again", {})
-	}
-})
-
-socket.on("opponent accept play again", function(data) {
-	overlay.classList.remove("active")
-	document.querySelector("#result").classList.remove("active")
-	createRoomWindow.classList.add("active")
-	rejoinRoom()
-	startCountdown()
-})
-
-socket.on("opponent not accept play again", function() {
-	overlay.classList.remove("active")
-	addMessage(language.messages["opponent not accept play again"])
-})
+let language = {}
 
 function addMessage(text) {
 	let id = Date.now()
@@ -384,13 +74,402 @@ class DisplayLang extends HTMLElement {
 	}
 }
 
-socket.on("in the room", function() {
-	addMessage(language.messages["in the room"])
-	overlay.classList.remove("active")
+
+const Caro = {
+	playerName: "unknown",
+	timeCounter: 0,
+	timeEnd: 0,
+	timeCountType: "up",
+	timer: null,
+	timerRan:false,
+	gameStarted: false,
+	board: [],
+	playerTurn: false,
+	isCreateRoom: false,
+	playStack: [],
+	prepareBoard: function() {
+		this.board = []
+		document.querySelector("#game").innerHTML = ""
+		for (var i = 0; i < 10; i++) {
+			this.board.push([])
+			let tr = document.createElement("tr")
+			for (var j = 0; j < 10; j++) {
+				this.board[i].push(null)
+				tr.innerHTML += `
+					<td data-pos="${i}_${j}"></td>
+				`
+			}
+			document.querySelector("#game").appendChild(tr)
+		}
+
+
+	},
+	checkWin: function(ch) {
+		let n = 10
+		let m = 10
+		for (let i = 0; i < n; i++) {
+			let count = 0;
+			for (let j = 0; j < m; j++) {
+				if (this.board[i][j] == ch) {
+					count++;
+					if (count == 5) return true;
+				} else {
+					count = 0;
+				}
+			}
+		}
+
+		for (let j = 0; j < m; j++) {
+			let count = 0;
+			for (let i = 0; i < n; i++) {
+				if (this.board[i][j] == ch) {
+					count++;
+					if (count == 5) return true;
+				} else {
+					count = 0;
+				}
+			}
+		}
+
+		for (let k = 0; k < (2 * (n - 1)); k++) {
+			let count = 0;
+			for (let i = 0; i < n; i++) {
+				let j = k - i;
+				if (j >= 0 && j < m && this.board[i][j] == ch) {
+					count++;
+					if (count == 5) return true;
+				} else {
+					count = 0;
+				}
+			}
+		}
+		for (let k = 0; k < (2 * (n - 1)); k++) {
+			let count = 0;
+			for (let i = 0; i < n; i++) {
+				let j = i - k;
+				if (j >= 0 && j < m && this.board[i][j] == ch) {
+					count++;
+					if (count == 5) return true;
+				} else {
+					count = 0;
+				}
+			}
+		}
+		return false;
+	},
+	checkTie: function() {
+		let c = 0
+		for (var i = 0; i < 10; i++) {
+			for (var j = 0; j < 10; j++) {
+				if (this.board[i][j] != null) {
+					c += 1
+				}
+			}
+		}
+		if (c == 20) return true
+		return false
+	},
+	createRoom: function() {
+		this.isCreateRoom = true
+		socket.emit("create room")
+	},
+	resetGame: function() {
+		this.clearTimer()
+	},
+	startTimer: function(type = "up", start = 0, end = null) {
+		if(this.timerRan){
+			return
+		}
+		this.timerRan = true
+		this.timeCounter = start
+		this.timeEnd = end
+		this.timeCountType = type
+		this.timer = setInterval(() => {
+			if (this.timeCountType == "up") {
+				this.timeCounter++
+			} else {
+				this.timeCounter--
+			}
+			document.querySelector("#timer").textContent = this.timeCounter
+			if (this.timeEnd != null && this.timeEnd == this.timeCounter) {
+				this.onTimeout()
+				this.timerRan = false
+				clearInterval(this.timer)
+			}
+		}, 1000)
+	},
+
+	play: function(row, col) {
+		if (this.gameStarted && this.playerTurn) {
+			if (this.board[row][col] == null) {
+				this.board[row][col] = this.isCreateRoom ? "X" : "O"
+				document.querySelector(`[data-pos="${row}_${col}`).classList.add(this.isCreateRoom ? "X" : "O")
+				this.playerTurn = false
+				socket.emit("play", {
+					row: row,
+					col: col
+				})
+				document.querySelector("#game").classList.add("inactive")
+			}
+			if (this.checkWin(this.isCreateRoom ? "X" : "O")) {
+				document.querySelector("#result-state").innerHTML = "Win"
+				this.endGame()
+			} else if (this.checkTie()) {
+				document.querySelector("#result-state").innerHTML = "Tie"
+				this.endGame()
+			}
+		} else {
+			addMessage("Please wait !")
+		}
+	},
+	onOpponentPlay: function(row, col) {
+		if (this.gameStarted && !this.playerTurn) {
+			if (this.board[row][col] == null) {
+				this.board[row][col] = this.isCreateRoom ? "O" : "X"
+				document.querySelector(`[data-pos="${row}_${col}`).classList.add(this.isCreateRoom ? "O" : "X")
+				this.playerTurn = true
+				document.querySelector("#game").classList.remove("inactive")
+			}
+			if (this.checkWin(this.isCreateRoom ? "O" : "X")) {
+				document.querySelector("#result-state").innerHTML = "Lose"
+				this.endGame()
+			} else if (this.checkTie()) {
+				document.querySelector("#result-state").innerHTML = "Tie"
+				this.endGame()
+			}
+		} else {
+			if (!this.gameStarted) {
+				this.playStack.push([row, col])
+			}
+		}
+	},
+	clearTimer: function() {
+		this.timerRan = false
+		clearInterval(this.timer)
+	},
+	onPlayerJoinedRoom: function() {
+		this.isCreateRoom = false
+		document.querySelector("#window1").classList.add("active")
+		document.querySelector("#timer-type").innerHTML = "Estimate :"
+		this.startTimer("up", 0, null)
+	},
+	prepareRoom: function() {
+		document.querySelector("#opponent-name").innerHTML = "???"
+		document.querySelector("#window1").classList.add("active")
+		document.querySelector("#timer-type").innerHTML = "Estimate :"
+		this.startTimer("up", 0, null)
+	},
+	prepareGame: function() {
+		this.clearTimer()
+		this.prepareBoard()
+		this.startGame()
+		document.querySelector("#board").classList.add("active")
+	},
+	startGame: function() {
+		document.getElementById("play-again").style.display = "flex"
+		if (this.isCreateRoom) {
+			this.playerTurn = true
+		}
+		socket.emit("ready", {})
+		this.clearTimer()
+		this.gameStarted = true
+		for (var i = 0; i < this.playStack.length; i++) {
+			this.board[this.playStack[i].row][this.playStack[i].col] = this.isCreateRoom ? "O" : "X"
+			document.querySelector(`[data-pos="${this.playStack[i].row}_${this.playStack[i].col}`).classList.add(this.isCreateRoom ? "O" : "X")
+		}
+		
+		document.querySelector("#window1").classList.remove("active")
+
+	},
+	endGame: function() {
+		this.playStack = []
+		this.gameStarted = false
+		document.querySelector("#board").classList.remove("active")
+		document.querySelector("#result").classList.add("active")
+	},
+	onOpponentLeaveRoom: function() {
+		if (this.gameStarted) {
+			document.querySelector("#result-state").innerHTML = "Win"
+			this.endGame()
+		} else {
+			this.resetGame()
+			this.clearTimer()
+			this.onTimeout = new Function()
+			if (this.isCreateRoom) {
+				this.prepareRoom()
+				document.querySelector("#window1").classList.add("active")
+			} else {
+				socket.emit("leave room")
+				document.querySelector("#window1").classList.remove("active")
+			}
+		}
+	},
+	onOpponentSurrender: function() {
+		if (this.gameStarted) {
+			document.querySelector("#result-state").innerHTML = "Win"
+			this.endGame()
+		} else {
+			this.resetGame()
+			this.clearTimer()
+			this.onTimeout = new Function()
+			if (this.isCreateRoom) {
+				this.prepareRoom()
+				document.querySelector("#window1").classList.add("active")
+			} else {
+				document.querySelector("#window1").classList.remove("active")
+			}
+		}
+	},
+	onPlayerSurrender: function() {
+		if (this.gameStarted) {
+			document.querySelector("#result-state").innerHTML = "Lose"
+			this.endGame()
+		} else {
+			this.resetGame()
+			this.clearTimer()
+			this.onTimeout = new Function()
+			document.querySelector("#window1").classList.remove("active")
+		}
+	},
+	onPlayerLeaveRoom: function() {
+		if (this.gameStarted) {
+			document.querySelector("#result-state").innerHTML = "Lose"
+			this.endGame()
+		} else {
+			this.resetGame()
+			this.clearTimer()
+			this.onTimeout = new Function()
+			document.querySelector("#window1").classList.remove("active")
+		}
+	}
+}
+document.querySelector("#btn-close-create-room-window").addEventListener("click", function(e) {
+	socket.emit("leave room", {})
 })
 
-socket.on("room full", function() {
-	addMessage(language.messages["room full"])
+document.querySelector("#create-room-btn").addEventListener("click", function() {
+	Caro.createRoom()
+	overlay.classList.add("active")
+})
+
+document.querySelector("#join-room-btn").addEventListener("click", function() {
+	socket.emit("join room", {
+		room_id: prompt("Input ID: ")
+	})
+	overlay.classList.add("active")
+})
+
+document.querySelector("#close-result-display").addEventListener("click", function() {
+	document.querySelector("#result").classList.remove("active")
+	if (Caro.isCreateRoom) {
+		Caro.prepareRoom()
+	} else {
+		socket.emit("leave room", {})
+	}
+})
+
+document.querySelector("#play-again").addEventListener("click", function(e) {
+	overlay.classList.add("active")
+	document.querySelector("#result").classList.remove("active")
+	createRoomWindow.classList.add("active")
+	socket.emit("request play again", {})
+})
+
+
+document.getElementById("surrender-btn").addEventListener("click", function() {
+	socket.emit("surrender", {})
+	if(!Caro.isCreateRoom){
+		socket.emit("leave room", {})
+	}
+	overlay.classList.add("active")
+})
+
+document.querySelector("#game").addEventListener("click", function(e) {
+	let col = e.target.cellIndex
+	let row = e.target.closest('tr').rowIndex
+	Caro.play(row, col)
+})
+
+document.getElementById("send-msg-btn").addEventListener("click",function(){
+	let msg = document.getElementById("msg-input").value
+	chatSocket.emit("send",{
+		msg:msg
+	})
+	let msgEle = document.createElement("span")
+	msgEle.classList.add("msg")
+	msgEle.classList.add("player")
+	msgEle.textContent =`You:${ msg}`
+	document.getElementById("msg-display").appendChild(msgEle)
+})
+
+chatSocket.on("message",function(data){
+	let msgEle = document.createElement("span")
+	msgEle.classList.add("msg")
+	msgEle.textContent = `${data.name}:${ data.msg}`
+	document.getElementById("msg-display").appendChild(msgEle)
+})
+
+socket.on("user ready", function(data) {
+	document.getElementById("username").innerHTML = data.name
+	document.getElementById("player-name").innerHTML = data.name
+	document.getElementById("board-player-name").innerHTML = data.name
+	document.getElementById("result-player-name").innerHTML = data.name
+})
+
+socket.on("opponent play", function(data) {
+	Caro.onOpponentPlay(data.row, data.col)
+})
+
+socket.on("create room success", function(data) {
+	overlay.classList.remove("active")
+	document.querySelector("#room-id").innerHTML = data.room_id
+	Caro.prepareRoom()
+	addMessage(language.messages["create room success"])
+})
+
+
+socket.on("opponent joined", function(data) {
+	document.querySelector("#opponent-name").innerHTML = data.opponent.name
+	document.querySelector("#board-opponent-name").innerHTML = data.opponent.name
+	document.querySelector("#result-opponent-name").innerHTML = data.opponent.name
+	Caro.prepareGame()
+	addMessage(language.messages["opponent joined"])
+})
+
+socket.on("leave room success", function() {
+	overlay.classList.remove("active")
+	Caro.onPlayerLeaveRoom()
+	addMessage(language.messages["leave room success"])
+})
+
+socket.on("opponent leave", function() {
+	overlay.classList.remove("active")
+	Caro.onOpponentLeaveRoom()
+	addMessage(language.messages["opponent leave"])
+})
+
+socket.on("opponent surrender", function() {
+	document.getElementById("play-again").style.display = "none"
+	addMessage(language.messages["opponent surrender"])
+	Caro.onOpponentSurrender()
+})
+
+socket.on("surrender success", function() {
+	overlay.classList.remove("active")
+	document.getElementById("play-again").style.display = "none"
+	Caro.onPlayerSurrender()
+})
+
+socket.on("joined room", function(data) {
+	overlay.classList.remove("active")
+	addMessage(language.messages["joined room"])
+	document.querySelector("#room-id").innerHTML = data.room_id
+	Caro.onPlayerJoinedRoom()
+})
+
+
+socket.on("in the room", function() {
+	addMessage(language.messages["in the room"])
 	overlay.classList.remove("active")
 })
 
@@ -399,52 +478,66 @@ socket.on("room not exist", function() {
 	overlay.classList.remove("active")
 })
 
-socket.on("opponent surrender", function() {
-	document.querySelector("#result-state").innerHTML = "Win"
-	document.querySelector("#result").classList.add("active")
-	Caro = null
-	addMessage(language.messages["opponent surrender"])
-	clearEstimateTimer()
-	document.querySelector("#name-opponent").innerHTML = "???"
-	document.querySelector("#board-opponent-name").innerHTML = "???"
-	document.querySelector("#info-name-opponent").innerHTML = "???"
-	document.querySelector("#board").classList.remove("active")
+socket.on("room full", function() {
+	addMessage(language.messages["room full"])
 	overlay.classList.remove("active")
-	clearCountdown()
 })
 
-socket.on("surrender success", function() {
-	document.querySelector("#result-state").innerHTML = "Lose"
-	document.querySelector("#result").classList.add("active")
-	Caro = null
-	clearEstimateTimer()
-	document.querySelector("#name-opponent").innerHTML = "???"
-	document.querySelector("#board-opponent-name").innerHTML = "???"
-	document.querySelector("#info-name-opponent").innerHTML = "???"
-	document.querySelector("#board").classList.remove("active")
-	overlay.classList.remove("active")
-	clearCountdown()
+socket.on("opponent request play again", function(data) {
+	overlay.classList.add("active")
+	document.querySelector("#result").classList.remove("active")
+	let state = confirm("Play again ?")
+	if (state) {
+		socket.emit("accept play again", {})
+		overlay.classList.remove("active")
+		createRoomWindow.classList.add("active")
+		Caro.prepareGame()
+	} else {
+		socket.emit("not accept play again")
+		overlay.classList.remove("active")
+		document.querySelector("#result").classList.add("active")
+	}
 })
 
-loadLanguage().then(() => {
-	window.customElements.define("s-lang", DisplayLang)
-	let name = ""
-	while (true) {
-		name = prompt(language.prompts["input name"])
-		if (!name) {
-			name = "Anonymous player"
-			break
-		} else {
-			if (name.length > 12) {
+socket.on("opponent accept play again", function(data) {
+	document.querySelector("#result").classList.remove("active")
+	document.querySelector("#board").classList.add("active")
+	overlay.classList.remove("active")
+	Caro.prepareBoard()
+	Caro.startGame()
+	Caro.clearTimer()
+})
+
+socket.on("opponent not accept play again", function(data) {
+	document.querySelector("#result").classList.add("active")
+	overlay.classList.remove("active")
+})
+
+function inputName(){
+	while(true){
+		let name = prompt(language.prompts["input name"])
+		if(!name){
+			return "Anonymous"
+		}else{
+			if(name.length>12){
 				alert(language.alerts["name too long"])
-			} else {
-				break
+
+			}else{
+				return name
 			}
+			
 		}
 	}
+}
 
+loadLanguage().then(() => {
+	overlay.classList.remove("active")
+	window.customElements.define("s-lang", DisplayLang)
+	let name = inputName()
 	socket.emit("user init", {
 		user_name: name
 	})
-
+	chatSocket.emit("init",{
+		user_name: name
+	})
 })

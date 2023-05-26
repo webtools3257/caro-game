@@ -15,6 +15,21 @@ const io = socketio(httpServer, {
 	}
 })
 
+const chatNsp = io.of("/chat")
+chatNsp.on("connection",function(socket){
+	socket.join("globalChatRoom")
+	socket.on("init",function(data){
+		socket.user_name = data.user_name
+	})
+	socket.on("send",function(data){
+		socket.to("globalChatRoom").emit("message",{
+			msg:data.msg,
+			name:socket.user_name,
+			time:new Date().toUTCString()
+		})
+	})
+})
+
 io.on("connection", (socket) => {
 
 	socket.on("user init", function(data) {

@@ -306,7 +306,7 @@ th {
 	bottom: 0;
 	width: 100%;
 	background: transparent;
-	z-index: 100999;
+	z-index:9999999;
 }
 
 .notification {
@@ -345,4 +345,51 @@ display: none;
 	display: block;
 }
 
+.chat-msg{
+	display: block;
+	width: 99%;
+	max-height: 300px;
+	overflow-y: scroll;
+}
 
+.msg{
+	display: block;
+	flex-wrap: wrap;
+	background: #A5FFF8;
+	color: black;
+	padding: 16px;
+	margin: 6px 0px;
+	border-radius: 50px;
+	width: 45%;
+	float: left;
+}
+
+.msg.player{
+	background: white;
+	float: right;
+}
+
+.chat-form{
+	display: flex;
+	flex: row;
+	align-items: center;
+}
+
+.chat-form>input{
+	margin: 5px;
+	color: white;
+	padding: 10px;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: white;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: white;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: white;
+}
