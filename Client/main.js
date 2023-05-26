@@ -86,6 +86,7 @@ const Caro = {
 	board: [],
 	playerTurn: false,
 	isCreateRoom: false,
+	room_id:null,
 	playStack: [],
 	prepareBoard: function() {
 		this.board = []
@@ -415,7 +416,7 @@ document.querySelector("#game").addEventListener("click", function(e) {
 
 document.getElementById("recruit").addEventListener("click",function(e){
 	chatSocket.emit("send invitation",{
-		room_id:Caro.room_id
+		id:Caro.room_id
 	})
 	addMessage("Sent")
 	let msgEle = document.createElement("span")
