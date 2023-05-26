@@ -14,11 +14,12 @@
 		"create room": "Tạo phòng",
 		"join room": "Tham gia phòng",
 		"room id": "ID phòng",
-		"action": " ",
+		"action": "Lựa chọn",
 		"list room": "Danh sách phòng",
 		"estimate": "Ước tính ",
 		"start in": "Bắt đầu sau ",
-		"surrender":"Đầu hàng"
+		"surrender":"Đầu hàng",
+		"recruit":"Gửi yêu cầu đến đối thủ trên nhóm chat"
 	},
 	"alerts": {
 		"change lang": "Thay đổi sẽ được áp dụng khi bạn khởi động lại trò chơi !",

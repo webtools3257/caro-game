@@ -33,6 +33,7 @@ body {
 	flex-flow: row;
 	align-items: center;
 	padding: 10px;
+	backdrop-filter: blur(20px);
 }
 
 .avatar {
@@ -139,15 +140,25 @@ body {
 	}
 }
 
-table {
+table.list-room-table {
+	
 	border-collapse: collapse;
 }
 
-table td,
-th {
+.list-room-table td{
 	border: 1px solid white;
+	border-collapse: collapse;
 	margin: 0px;
 	cursor: pointer;
+	padding: 10px;
+}
+
+th {
+	border: 1px solid white;
+	border-collapse: collapse;
+	margin: 0px;
+	cursor: pointer;
+	padding: 10px;
 }
 
 .create-room {
@@ -160,7 +171,7 @@ th {
 	z-index: 100;
 	background: transparent;
 	transition: 1s;
-	backdrop-filter: blur(10px);
+	backdrop-filter: blur(20px);
 	-webkit-animation-name: fadeInLeft;
 	-moz-animation-name: fadeInLeft;
 	-o-animation-name: fadeInLeft;
@@ -280,7 +291,7 @@ th {
 	top: 0;
 	left: 0;
 	background: transparent;
-	backdrop-filter: blur(19px);
+	backdrop-filter: blur(20px);
 	position: fixed;
 	width: 100%;
 	height: 100%;
@@ -314,7 +325,7 @@ th {
 	margin: 16px;
 	padding: 16px;
 	background: white;
-	backdrop-filter: blur(9px);
+	backdrop-filter: blur(20px);
 	color: black;
 	border-radius: 5px;
 	text-align: center;
@@ -334,7 +345,7 @@ display: none;
 	top: 0;
 	left: 0;
 	background: transparent;
-	backdrop-filter: blur(19px);
+	backdrop-filter: blur(20px);
 	position: fixed;
 	width: 100%;
 	height: 100%;
@@ -346,27 +357,29 @@ display: none;
 }
 
 .chat-msg{
-	display: block;
+	display: flex;
 	width: 99%;
 	max-height: 300px;
+	min-height: 300px;
 	overflow-y: scroll;
+	flex-flow: column;
 }
 
 .msg{
 	display: block;
-	flex-wrap: wrap;
+	overflow-wrap: break-word;
 	background: #A5FFF8;
 	color: black;
 	padding: 16px;
-	margin: 6px 0px;
-	border-radius: 50px;
+	margin: 8px 7px;
+	border-radius: 10px;
 	width: 45%;
-	float: left;
 }
 
 .msg.player{
 	background: white;
-	float: right;
+	align-self: flex-end;
+	margin-left:90px;
 }
 
 .chat-form{
@@ -376,9 +389,14 @@ display: none;
 }
 
 .chat-form>input{
+	width: 88%;
 	margin: 5px;
 	color: white;
 	padding: 10px;
+}
+
+.chat-form>input:focus{
+	outline: none;
 }
 
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */

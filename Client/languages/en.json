@@ -20,7 +20,8 @@
 		"list room":"List room",
 		"estimate":"Emirates ",
 		"start in":"Start in ",
-		"surrender":"Surrender"
+		"surrender":"Surrender",
+		"recruit":"Recruit"
 	},
 	"alerts":{
 		"change lang":"See changes will be applied when you restart the application !",

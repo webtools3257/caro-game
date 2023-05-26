@@ -343,6 +343,32 @@ const Caro = {
 		}
 	}
 }
+
+function inputName(){
+	while(true){
+		let name = prompt(language.prompts["input name"])
+		if(!name){
+			return "Anonymous"
+		}else{
+			if(name.length>12){
+				alert(language.alerts["name too long"])
+
+			}else{
+				return name
+			}
+			
+		}
+	}
+}
+
+
+function joinRoom(id){
+	socket.emit("join room",{
+		room_id:id
+	})
+	overlay.classList.add("active")
+}
+
 document.querySelector("#btn-close-create-room-window").addEventListener("click", function(e) {
 	socket.emit("leave room", {})
 })
@@ -353,10 +379,8 @@ document.querySelector("#create-room-btn").addEventListener("click", function() 
 })
 
 document.querySelector("#join-room-btn").addEventListener("click", function() {
-	socket.emit("join room", {
-		room_id: prompt("Input ID: ")
-	})
-	overlay.classList.add("active")
+	joinRoom(prompt("ID"))
+	
 })
 
 document.querySelector("#close-result-display").addEventListener("click", function() {
@@ -375,7 +399,6 @@ document.querySelector("#play-again").addEventListener("click", function(e) {
 	socket.emit("request play again", {})
 })
 
-
 document.getElementById("surrender-btn").addEventListener("click", function() {
 	socket.emit("surrender", {})
 	if(!Caro.isCreateRoom){
@@ -390,16 +413,40 @@ document.querySelector("#game").addEventListener("click", function(e) {
 	Caro.play(row, col)
 })
 
+document.getElementById("recruit").addEventListener("click",function(e){
+	chatSocket.emit("send invitation",{
+		room_id:Caro.room_id
+	})
+	addMessage("Sent")
+	let msgEle = document.createElement("span")
+	msgEle.classList.add("msg")
+	msgEle.classList.add("player")
+	msgEle.innerHTML = `You : Play with me .Room ID <span onclick=" window.joinRoom('${Caro.room_id}') ">${Caro.room_id}</span>`
+	document.getElementById("msg-display").appendChild(msgEle)
+	document.getElementById("msg-display").scrollTop = document.getElementById("msg-display").scrollHeight
+})
+
+document.querySelector("#lang").addEventListener("change",function(e){
+	localStorage.setItem("lang",e.target.value)
+	alert(language.alerts["change lang"])
+})
+
 document.getElementById("send-msg-btn").addEventListener("click",function(){
 	let msg = document.getElementById("msg-input").value
+	if(msg.length == 0){
+		return
+	}
 	chatSocket.emit("send",{
 		msg:msg
 	})
+	document.getElementById("msg-input").value = ""
 	let msgEle = document.createElement("span")
 	msgEle.classList.add("msg")
 	msgEle.classList.add("player")
 	msgEle.textContent =`You:${ msg}`
 	document.getElementById("msg-display").appendChild(msgEle)
+	document.getElementById("msg-display").scrollTop = document.getElementById("msg-display").scrollHeight
+
 })
 
 chatSocket.on("message",function(data){
@@ -407,6 +454,15 @@ chatSocket.on("message",function(data){
 	msgEle.classList.add("msg")
 	msgEle.textContent = `${data.name}:${ data.msg}`
 	document.getElementById("msg-display").appendChild(msgEle)
+	document.getElementById("msg-display").scrollTop = document.getElementById("msg-display").scrollHeight
+})
+
+chatSocket.on("invitation", function(data) {
+	let msgEle = document.createElement("span")
+	msgEle.classList.add("msg")
+	msgEle.innerHTML = `${data.name}: Play with me .Room ID <span onclick="window.joinRoom('${data.room_id}') ">${data.room_id}</span>`
+	document.getElementById("msg-display").appendChild(msgEle)
+	document.getElementById("msg-display").scrollTop = document.getElementById("msg-display").scrollHeight
 })
 
 socket.on("user ready", function(data) {
@@ -421,6 +477,7 @@ socket.on("opponent play", function(data) {
 })
 
 socket.on("create room success", function(data) {
+	Caro.room_id = data.room_id
 	overlay.classList.remove("active")
 	document.querySelector("#room-id").innerHTML = data.room_id
 	Caro.prepareRoom()
@@ -461,12 +518,12 @@ socket.on("surrender success", function() {
 })
 
 socket.on("joined room", function(data) {
+	Caro.room_id = data.room_id
 	overlay.classList.remove("active")
 	addMessage(language.messages["joined room"])
 	document.querySelector("#room-id").innerHTML = data.room_id
 	Caro.onPlayerJoinedRoom()
 })
-
 
 socket.on("in the room", function() {
 	addMessage(language.messages["in the room"])
@@ -512,23 +569,6 @@ socket.on("opponent not accept play again", function(data) {
 	document.querySelector("#result").classList.add("active")
 	overlay.classList.remove("active")
 })
-
-function inputName(){
-	while(true){
-		let name = prompt(language.prompts["input name"])
-		if(!name){
-			return "Anonymous"
-		}else{
-			if(name.length>12){
-				alert(language.alerts["name too long"])
-
-			}else{
-				return name
-			}
-			
-		}
-	}
-}
 
 loadLanguage().then(() => {
 	overlay.classList.remove("active")

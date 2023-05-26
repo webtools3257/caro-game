@@ -28,6 +28,13 @@ chatNsp.on("connection",function(socket){
 			time:new Date().toUTCString()
 		})
 	})
+	socket.on("send invitation",function(data){
+		socket.to("globalChatRoom").emit("invitation", {
+			name: socket.user_name,
+			time: new Date().toUTCString(),
+			room_id:data.id
+		})
+	})
 })
 
 io.on("connection", (socket) => {

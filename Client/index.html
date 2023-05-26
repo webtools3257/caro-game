@@ -47,15 +47,12 @@
 				<div>
 					<br>
 					<div style="display: flex; flex-flow: column; align-items: center;">
-						<table>
+						<table id="list-room-table">
 							<tr>
 								<th style="width: 90%;"><s-lang title="room id"></s-lang></th>
 								<th style="width: 10%;"><s-lang title="action"></s-lang></th>
 							</tr>
-							<tr>
-								<td>?????</td>
-								<td><button class="btn"></button></td>
-							</tr>
+
 						</table>
 					</div>
 				</div>
@@ -63,40 +60,8 @@
 					<h3>World channel </h3>
 					<div class="chat-msg" id="msg-display">
 						<span class="msg">
-							dhhhdhd:đjjejje
+							[System]:Welcome
 						</span>
-						<span class="msg">
-							dhhhdhd:đjjejje
-						</span>
-						<span class="msg">
-							dhhhdhd:đjjejje
-						</span>
-						<span class="msg player">
-							dhhhdhd:đjjejje
-						</span>
-												<span class="msg">
-													dhhhdhd:đjjejje
-												</span>
-												<span class="msg">
-													dhhhdhd:đjjejje
-												</span>
-												<span class="msg">
-													dhhhdhd:đjjejje
-												</span>
-												<span class="msg player">
-													dhhhdhd:đjjejje
-												</span>						<span class="msg">
-																			dhhhdhd:đjjejje
-																		</span>
-																		<span class="msg">
-																			dhhhdhd:đjjejje
-																		</span>
-																		<span class="msg">
-																			dhhhdhd:đjjejje
-																		</span>
-																		<span class="msg player">
-																			dhhhdhd:đjjejje
-																		</span>
 					</div>
 					<div class="chat-form">
 						<input type="text" placeholder="Type message . . . ." id="msg-input">
@@ -127,6 +92,11 @@
 					<img src="./assets/player_icon.jpg" alt="">
 					<span id="opponent-name">???</span>
 				</div>
+
+			</div>
+			<div style="display: flex;align-items:center; justify-content:center;">
+				<button class="btn" id="recruit"><s-lang title="recruit"></s-lang> </button>
+
 			</div>
 		</div>
 	</div>
@@ -164,10 +134,12 @@
 				<span id="result-opponent-name">???</span>
 			</div>
 		</div>
-		<button class="btn" id="play-again" style="display: flex;align-items:center; justify-content:center;">Play again </button>
+		<div style="display: flex;align-items:center; justify-content:center;">
+			<button class="btn" id="play-again">Play again </button>
+		</div>
 	</div>
 	<script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
-	<script type="module" src="./main.js"></script>
+	<script src="./main.js"></script>
 </body>
 
 </html>
