@@ -353,7 +353,6 @@ function inputName(){
 		}else{
 			if(name.length>12){
 				alert(language.alerts["name too long"])
-
 			}else{
 				return name
 			}
@@ -381,7 +380,6 @@ document.querySelector("#create-room-btn").addEventListener("click", function() 
 
 document.querySelector("#join-room-btn").addEventListener("click", function() {
 	joinRoom(prompt("ID"))
-	
 })
 
 document.querySelector("#close-result-display").addEventListener("click", function() {
@@ -484,7 +482,6 @@ socket.on("create room success", function(data) {
 	Caro.prepareRoom()
 	addMessage(language.messages["create room success"])
 })
-
 
 socket.on("opponent joined", function(data) {
 	document.querySelector("#opponent-name").innerHTML = data.opponent.name
